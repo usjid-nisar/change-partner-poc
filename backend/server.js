@@ -269,17 +269,19 @@ const validateFile = async (filePath) => {
 const processData = (data) => {
     // Map and normalize the data
     const processedData = data.map((row, index) => ({
-        index: index + 1, // Add 1-based index
+        index: index + 1,
         Dimensions: row.Dimension || row['Dimension'],
         "Z Score": Number(row['Z-Score'] || row['Z Score']),
         "P Score": Number(row['P-Value'] || row['P Score'])
     }));
 
-    // Sort by P Score (descending) and then by Z Score (descending)
+    // Sort by P Score (descending) and then by absolute Z Score (descending)
     const sortedData = processedData.sort((a, b) => {
-        if (b["P Score"] !== a["P Score"]) {
+        // First sort by P Score in descending order
+        if (a["P Score"] !== b["P Score"]) {
             return b["P Score"] - a["P Score"];
         }
+        // If P Scores are equal, sort by absolute Z Score in descending order
         return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
     });
     
