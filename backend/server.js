@@ -34,56 +34,161 @@ const storage = multer.diskStorage({
     }
 });
 
+// Add error types
+const ErrorTypes = {
+    INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
+    MISSING_COLUMNS: 'MISSING_COLUMNS',
+    INVALID_DATA: 'INVALID_DATA',
+    EMPTY_FILE: 'EMPTY_FILE',
+    FILE_TOO_LARGE: 'FILE_TOO_LARGE'
+};
+
+// Add custom error handler
+const createError = (type, message) => ({
+    type,
+    message,
+    timestamp: new Date().toISOString()
+});
+
+// Update file filter with better error handling
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['.xlsx', '.csv'];
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedTypes.includes(ext)) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file type. Only XLSX and CSV files are allowed.'));
+        cb(createError(
+            ErrorTypes.INVALID_FILE_TYPE,
+            `Invalid file type. Only ${allowedTypes.join(', ')} files are allowed.`
+        ));
     }
 };
 
+// Update multer configuration
 const upload = multer({ 
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
-});
+    limits: { 
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+        files: 1 // Only allow one file
+    }
+}).single('file');
 
 // Serve static files
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-// API endpoints
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
+// Add dimension mapping configuration
+const dimensionMappings = {
+    // Basic emotions mapping
+    "Anger": "Negative Emotion",
+    "Fear": "Negative Emotion",
+    "Sadness": "Negative Emotion",
+    "Disgust": "Negative Emotion",
+    "Joy": "Positive Emotion",
+    "Trust": "Positive Emotion",
+    "Anticipation": "Positive Emotion",
+    "Surprise": "Neutral Emotion",
+    
+    // Work-related dimensions
+    "Workload": "Work Stress",
+    "Time Pressure": "Work Stress",
+    "Job Control": "Work Environment",
+    "Social Support": "Work Environment",
+    "Leadership": "Management",
+    "Communication": "Management",
+    
+    // Default category for unmapped dimensions
+    "DEFAULT": "Uncategorized"
+};
 
-        const data = await validateFile(req.file.path);
-        if (!data) {
-            await fs.unlink(req.file.path);
-            return res.status(400).json({ 
-                error: 'Invalid file format. Required columns: Dimension, Z-Score, P-Value' 
+// Add function to identify highest dimension
+const analyzeHighestDimension = (data) => {
+    // Sort by absolute Z Score in descending order
+    const sortedByZScore = [...data].sort((a, b) => 
+        Math.abs(b["Z Score"]) - Math.abs(a["Z Score"])
+    );
+
+    // Get the highest dimension
+    const highestDimension = sortedByZScore[0];
+    
+    // Map to higher-level category
+    const dimensionName = highestDimension.Dimensions;
+    const category = dimensionMappings[dimensionName] || dimensionMappings["DEFAULT"];
+    
+    return {
+        dimension: dimensionName,
+        category: category,
+        zScore: highestDimension["Z Score"],
+        pScore: highestDimension["P Score"],
+        impact: highestDimension.Category
+    };
+};
+
+// Update the upload endpoint
+app.post('/api/upload', async (req, res) => {
+    upload(req, res, async function(err) {
+        try {
+            // Handle multer errors
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(400).json(createError(
+                        ErrorTypes.FILE_TOO_LARGE,
+                        'File is too large. Maximum size is 5MB.'
+                    ));
+                }
+                return res.status(400).json(createError(
+                    ErrorTypes.INVALID_FILE_TYPE,
+                    'File upload error: ' + err.message
+                ));
+            } else if (err) {
+                return res.status(400).json(err); // Custom error from fileFilter
+            }
+
+            // Check if file exists
+            if (!req.file) {
+                return res.status(400).json(createError(
+                    ErrorTypes.INVALID_FILE_TYPE,
+                    'No file uploaded. Please select a file.'
+                ));
+            }
+
+            // Validate file contents
+            const data = await validateFile(req.file.path);
+            
+            // Clean up uploaded file regardless of validation result
+            await fs.unlink(req.file.path).catch(console.error);
+
+            if (!data) {
+                return res.status(400).json(createError(
+                    ErrorTypes.INVALID_DATA,
+                    'Invalid file format or data. Please ensure:\n' +
+                    '1. Required columns (Dimension, Z-Score, P-Value) are present\n' +
+                    '2. All numeric values are valid\n' +
+                    '3. File is not empty'
+                ));
+            }
+
+            const processedResult = processData(data);
+
+            res.json({
+                message: 'File processed successfully',
+                data: processedResult.data,
+                analysis: processedResult.analysis
             });
+
+        } catch (error) {
+            // Clean up on error
+            if (req.file) {
+                await fs.unlink(req.file.path).catch(console.error);
+            }
+            
+            console.error('Upload error:', error);
+            res.status(500).json(createError(
+                ErrorTypes.INVALID_DATA,
+                'Server error processing file: ' + error.message
+            ));
         }
-
-        const processedData = processData(data);
-        const outputPath = path.join(__dirname, 'public', 'visualization.png');
-        await generateVisualization(processedData, outputPath);
-
-        // Clean up
-        await fs.unlink(req.file.path);
-
-        res.json({
-            message: 'File processed successfully',
-            imageUrl: '/static/visualization.png',
-            data: processedData
-        });
-    } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ error: 'Server error processing file' });
-    }
+    });
 });
 
 // Health check endpoint
@@ -97,14 +202,18 @@ app.listen(PORT, () => {
     console.log(`Backend server running on http://localhost:${PORT}`);
 });
 
-// Helper functions
+// Update validateFile function with better error handling
 const validateFile = async (filePath) => {
     try {
         let data;
         const fileExt = path.extname(filePath).toLowerCase();
         
+        // Read file based on type
         if (fileExt === '.csv') {
             const fileContent = await fs.readFile(filePath, 'utf8');
+            if (!fileContent.trim()) {
+                throw createError(ErrorTypes.EMPTY_FILE, 'File is empty');
+            }
             data = xlsx.utils.sheet_to_json(
                 xlsx.utils.aoa_to_sheet(
                     fileContent.split('\n').map(line => line.split(','))
@@ -112,51 +221,89 @@ const validateFile = async (filePath) => {
             );
         } else if (fileExt === '.xlsx') {
             const workbook = xlsx.readFile(filePath);
+            if (!workbook.SheetNames.length) {
+                throw createError(ErrorTypes.EMPTY_FILE, 'Excel file has no sheets');
+            }
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             data = xlsx.utils.sheet_to_json(sheet);
-        } else {
-            return null;
         }
 
-        if (!data || data.length === 0) return null;
+        // Validate data presence
+        if (!data || data.length === 0) {
+            throw createError(ErrorTypes.EMPTY_FILE, 'No data found in file');
+        }
 
+        // Validate required columns
         const requiredColumns = ["Dimension", "Z-Score", "P-Value"];
         const keys = Object.keys(data[0]);
+        const missingColumns = requiredColumns.filter(col => !keys.includes(col));
         
-        if (!requiredColumns.every(col => keys.includes(col))) {
-            return null;
+        if (missingColumns.length > 0) {
+            throw createError(
+                ErrorTypes.MISSING_COLUMNS,
+                `Missing required columns: ${missingColumns.join(', ')}`
+            );
         }
 
-        return data.map(row => ({
-            "Dimensions": row.Dimension,
-            "P Score": row["P-Value"],
-            "Z Score": row["Z-Score"]
-        }));
+        // Convert and validate numeric values
+        return data.map((row, index) => {
+            const pValue = Number(row["P-Value"]);
+            const zScore = Number(row["Z-Score"]);
+            
+            if (isNaN(pValue) || isNaN(zScore)) {
+                throw createError(
+                    ErrorTypes.INVALID_DATA,
+                    `Invalid numeric value at row ${index + 1}: P-Value or Z-Score is not a number`
+                );
+            }
+
+            return {
+                "Dimensions": row.Dimension,
+                "P Score": pValue,
+                "Z Score": zScore
+            };
+        });
     } catch (error) {
         console.error('File validation error:', error);
-        return null;
+        throw error; // Propagate error for handling in upload endpoint
     }
 };
 
 // Process data
 const processData = (data) => {
-    return data.map(row => ({
+    // First process the data as before
+    const processedData = data.map(row => ({
         ...row,
         Category: Math.abs(row["Z Score"]) > 1.96 ? "High" : 
                  Math.abs(row["Z Score"]) > 1.645 ? "Medium" : "Low"
-    })).sort((a, b) => b["P Score"] - a["P Score"]);
+    })).sort((a, b) => {
+        // First sort by P Score in descending order
+        if (b["P Score"] !== a["P Score"]) {
+            return b["P Score"] - a["P Score"];
+        }
+        // If P Scores are equal, sort by Z Score in descending order
+        return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
+    });
+
+    // Analyze the highest dimension
+    const analysis = analyzeHighestDimension(processedData);
+
+    return {
+        data: processedData,
+        analysis: analysis
+    };
 };
 
 // Generate visualization with enhanced customization
-const generateVisualization = async (data, outputPath) => {
+const generateVisualization = async (data, outputPath, analysis) => {
     try {
         // Increase canvas size for better readability
-        const canvas = createCanvas(1200, 800);
+        const canvas = createCanvas(1200, 900); // Increased height for analysis
         const ctx = canvas.getContext('2d');
         
         // Set white background
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, 1200, 800);
+        ctx.fillRect(0, 0, 1200, 900);
         
         // Draw title
         ctx.fillStyle = "#333333";
@@ -221,7 +368,20 @@ const generateVisualization = async (data, outputPath) => {
         // Add border to visualization
         ctx.strokeStyle = "#cccccc";
         ctx.lineWidth = 2;
-        ctx.strokeRect(10, 10, 1180, 780);
+        ctx.strokeRect(10, 10, 1180, 880);
+        
+        // Add analysis section
+        const analysisY = 750;
+        ctx.font = "bold 24px Arial";
+        ctx.fillStyle = "#333333";
+        ctx.fillText("Key Analysis", 50, analysisY);
+
+        ctx.font = "18px Arial";
+        ctx.fillText(`Highest Impact Dimension: ${analysis.dimension}`, 50, analysisY + 40);
+        ctx.fillText(`Category: ${analysis.category}`, 50, analysisY + 70);
+        ctx.fillText(`Impact Level: ${analysis.impact}`, 50, analysisY + 100);
+        ctx.fillText(`Z-Score: ${analysis.zScore.toFixed(4)}`, 400, analysisY + 70);
+        ctx.fillText(`P-Score: ${analysis.pScore.toFixed(4)}`, 400, analysisY + 100);
         
         const buffer = canvas.toBuffer('image/png');
         

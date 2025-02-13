@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import { FileUpload } from './components/FileUpload';
-import { DataVisualization } from './components/DataVisualization';
 import { DataTable } from './components/DataTable';
+import { AnalysisSection } from './components/AnalysisSection';
 import './App.css';
 
 function App() {
   const [processedData, setProcessedData] = useState(null);
-  const [visualizationUrl, setVisualizationUrl] = useState('');
+  const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleUploadSuccess = (data) => {
     setProcessedData(data.data);
-    setVisualizationUrl(`http://localhost:3001${data.imageUrl}`);
+    setAnalysis(data.analysis);
     setError('');
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Data Visualization Tool</h1>
+        <h1>Data Analysis Tool</h1>
       </header>
       <main className="App-main">
         <FileUpload 
@@ -31,11 +31,7 @@ function App() {
         {error && <div className="error-message">{error}</div>}
         {loading && <div className="loading">Processing...</div>}
         
-        {visualizationUrl && (
-          <DataVisualization 
-            imageUrl={visualizationUrl}
-          />
-        )}
+        {analysis && <AnalysisSection analysis={analysis} />}
         
         {processedData && (
           <DataTable 
