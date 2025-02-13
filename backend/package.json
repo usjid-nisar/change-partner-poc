@@ -1,0 +1,20 @@
+{
+  "name": "data-visualization-backend",
+  "version": "1.0.0",
+  "description": "Backend server for data visualization",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "canvas": "^3.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 
