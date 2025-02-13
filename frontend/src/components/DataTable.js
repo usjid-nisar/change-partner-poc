@@ -29,8 +29,8 @@ export const DataTable = ({ data }) => {
               <tr key={row.index}>
                 <td>{row.index}</td>
                 <td>{row.Dimensions}</td>
-                <td>{typeof row["P Score"] === 'number' ? row["P Score"].toFixed(4) : 'N/A'}</td>
-                <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toFixed(4) : 'N/A'}</td>
+                <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
+                <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toString() : 'N/A'}</td>
               </tr>
             ))}
           </tbody>
