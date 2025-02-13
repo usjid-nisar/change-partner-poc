@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import './DataTable.css';
+import { FiGitBranch } from 'react-icons/fi';
 
 export const DataTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('data'); // 'data' or 'mindmap'
   
   // Available options for rows per page
   const rowsPerPageOptions = [10, 25, 50, 100];
@@ -20,7 +22,7 @@ export const DataTable = ({ data }) => {
   if (!data || !Array.isArray(data)) {
     return (
       <div className="table-section">
-        <h2>Processed Data</h2>
+        <h2>Data Analysis</h2>
         <p>No data available</p>
       </div>
     );
@@ -70,114 +72,147 @@ export const DataTable = ({ data }) => {
 
   return (
     <div className="table-section">
-      <h2>Processed Data</h2>
-      <div className="table-controls">
-        <div className="table-top-controls">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search dimensions..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-            {searchTerm && (
-              <button 
-                className="clear-search"
-                onClick={() => {
-                  setSearchTerm('');
-                  setCurrentPage(1);
-                }}
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-        
-        <div className="table-bottom-controls">
-          <div className="table-info">
-            <span>
-              Showing {filteredData.length} of {data.length} entries
-            </span>
-            <span>Page {currentPage} of {totalPages}</span>
-          </div>
-          <div className="rows-per-page">
-            <label htmlFor="rowsPerPage">Rows per page:</label>
-            <select
-              id="rowsPerPage"
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              className="rows-select"
-            >
-              {rowsPerPageOptions.map(option => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+      <h2>Data Analysis</h2>
+      
+      <div className="tabs">
+        <button 
+          className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
+          onClick={() => setActiveTab('data')}
+        >
+          Processed Data
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'mindmap' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mindmap')}
+        >
+          Mind Map
+        </button>
       </div>
 
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Dimensions</th>
-              <th>P Score</th>
-              <th>Z Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRows.map((row) => (
-              <tr 
-                key={row.index}
-                className={`
-                  ${pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
-                  ${getZScoreClass(row["Z Score"])}
-                `}
+      {/* Tab Content with animation */}
+      <div className={`tab-content ${activeTab === 'data' ? 'active' : ''}`}>
+        {activeTab === 'data' && (
+          <>
+            <div className="table-controls">
+              <div className="table-top-controls">
+                <div className="search-box">
+                  <input
+                    type="text"
+                    placeholder="Search dimensions..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input"
+                  />
+                  {searchTerm && (
+                    <button 
+                      className="clear-search"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setCurrentPage(1);
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              <div className="table-bottom-controls">
+                <div className="table-info">
+                  <span>
+                    Showing {filteredData.length} of {data.length} entries
+                  </span>
+                  <span>Page {currentPage} of {totalPages}</span>
+                </div>
+                <div className="rows-per-page">
+                  <label htmlFor="rowsPerPage">Rows per page:</label>
+                  <select
+                    id="rowsPerPage"
+                    value={rowsPerPage}
+                    onChange={handleRowsPerPageChange}
+                    className="rows-select"
+                  >
+                    {rowsPerPageOptions.map(option => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Dimensions</th>
+                    <th>P Score</th>
+                    <th>Z Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRows.map((row) => (
+                    <tr 
+                      key={row.index}
+                      className={`
+                        ${pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
+                        ${getZScoreClass(row["Z Score"])}
+                      `}
+                    >
+                      <td>{row.index}</td>
+                      <td>{row.Dimensions}</td>
+                      <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
+                      <td className="z-score-cell">
+                        {typeof row["Z Score"] === 'number' ? (
+                          <span className={getZScoreClass(row["Z Score"])}>
+                            {row["Z Score"] > 0 ? '+' : ''}{row["Z Score"].toString()}
+                          </span>
+                        ) : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="pagination">
+              <button 
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="page-button"
               >
-                <td>{row.index}</td>
-                <td>{row.Dimensions}</td>
-                <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
-                <td className="z-score-cell">
-                  {typeof row["Z Score"] === 'number' ? (
-                    <span className={getZScoreClass(row["Z Score"])}>
-                      {row["Z Score"] > 0 ? '+' : ''}{row["Z Score"].toString()}
-                    </span>
-                  ) : 'N/A'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                Previous
+              </button>
+              {pageNumbers.map(number => (
+                <button
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={`page-button ${currentPage === number ? 'active' : ''}`}
+                >
+                  {number}
+                </button>
+              ))}
+              <button 
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="page-button"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
-      <div className="pagination">
-        <button 
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="page-button"
-        >
-          Previous
-        </button>
-        {pageNumbers.map(number => (
-          <button
-            key={number}
-            onClick={() => paginate(number)}
-            className={`page-button ${currentPage === number ? 'active' : ''}`}
-          >
-            {number}
-          </button>
-        ))}
-        <button 
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="page-button"
-        >
-          Next
-        </button>
+
+      <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
+        {activeTab === 'mindmap' && (
+          <div className="mindmap-placeholder">
+            <FiGitBranch />
+            <p>Mind Map visualization coming soon...</p>
+            <small>This feature is currently under development</small>
+          </div>
+        )}
       </div>
     </div>
   );
