@@ -1,0 +1,8 @@
+Dimension,Z-Score,P-Value
+MaxP,1.5,0.9999999
+MinP,-1.5,0.0000001
+LargeZ,999.999,0.05
+SmallZ,0.00001,0.05
+NegativeZ,-500.5,0.05
+ExactZero,0,0.5
+ExactOne,1.0,1.0 

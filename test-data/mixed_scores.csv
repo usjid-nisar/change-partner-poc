@@ -1,0 +1,9 @@
+Dimension,Z-Score,P-Value
+High_P_High_Z,5.0,0.95
+High_P_Low_Z,1.5,0.95
+Mid_P_High_Z,4.0,0.5
+Mid_P_Neg_Z,-4.0,0.5
+Low_P_High_Z,3.0,0.05
+Low_P_Low_Z,1.0,0.05
+Zero_P_Mixed_Z,-2.0,0
+Mixed_Decimals,2.456789,0.123456789 
