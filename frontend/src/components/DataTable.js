@@ -21,16 +21,14 @@ export const DataTable = ({ data }) => {
               <th>Dimensions</th>
               <th>P Score</th>
               <th>Z Score</th>
-              <th>Category</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, index) => (
-              <tr key={index} className={`category-${(row.Category || '').toLowerCase()}`}>
+              <tr key={index}>
                 <td>{row.Dimensions}</td>
                 <td>{typeof row["P Score"] === 'number' ? row["P Score"].toFixed(4) : 'N/A'}</td>
                 <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toFixed(4) : 'N/A'}</td>
-                <td>{row.Category || 'N/A'}</td>
               </tr>
             ))}
           </tbody>

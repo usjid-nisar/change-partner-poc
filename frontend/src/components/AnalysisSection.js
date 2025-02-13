@@ -16,16 +16,6 @@ export const AnalysisSection = ({ analysis }) => {
           <label>Highest Impact Dimension:</label>
           <span>{analysis.dimension}</span>
         </div>
-        <div className="analysis-item">
-          <label>Category:</label>
-          <span>{analysis.category}</span>
-        </div>
-        <div className="analysis-item">
-          <label>Impact Level:</label>
-          <span className={`impact-${(analysis.impact || '').toLowerCase()}`}>
-            {analysis.impact}
-          </span>
-        </div>
         <div className="analysis-scores">
           <div className="score-item">
             <label>Z-Score:</label>

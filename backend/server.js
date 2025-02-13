@@ -271,31 +271,19 @@ const processData = (data) => {
     const processedData = data.map(row => ({
         Dimensions: row.Dimension || row['Dimension'],
         "Z Score": Number(row['Z-Score'] || row['Z Score']),
-        "P Score": Number(row['P-Value'] || row['P Score']),
-        Category: Math.abs(Number(row['Z-Score'] || row['Z Score'])) > 1.96 ? "High" : 
-                 Math.abs(Number(row['Z-Score'] || row['Z Score'])) > 1.645 ? "Medium" : "Low"
+        "P Score": Number(row['P-Value'] || row['P Score'])
     }));
 
-    // Sort by P Score and Z Score
+    // Sort by P Score (descending) and then by Z Score (descending)
     const sortedData = processedData.sort((a, b) => {
         if (b["P Score"] !== a["P Score"]) {
             return b["P Score"] - a["P Score"];
         }
         return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
     });
-
-    // Find the highest impact dimension
-    const highestImpact = sortedData[0];
     
     return {
-        data: sortedData,
-        analysis: {
-            dimension: highestImpact.Dimensions,
-            category: highestImpact.Category,
-            zScore: highestImpact["Z Score"],
-            pScore: highestImpact["P Score"],
-            impact: highestImpact.Category
-        }
+        data: sortedData
     };
 };
 
@@ -340,7 +328,6 @@ const generateVisualization = async (data, outputPath, analysis) => {
         ctx.fillText("Dimension", 50, startY);
         ctx.fillText("P Score", 400, startY);
         ctx.fillText("Z Score", 550, startY);
-        ctx.fillText("Category", 700, startY);
         
         // Draw horizontal line under headers
         ctx.beginPath();
@@ -363,11 +350,6 @@ const generateVisualization = async (data, outputPath, analysis) => {
             
             // Draw Z Score
             ctx.fillText(row["Z Score"].toFixed(4), 550, y);
-            
-            // Draw Category with color
-            ctx.fillStyle = row.Category === "High" ? "red" : 
-                          row.Category === "Medium" ? "orange" : "green";
-            ctx.fillText(row.Category, 700, y);
         });
         
         // Add border to visualization
@@ -383,8 +365,6 @@ const generateVisualization = async (data, outputPath, analysis) => {
 
         ctx.font = "18px Arial";
         ctx.fillText(`Highest Impact Dimension: ${analysis.dimension}`, 50, analysisY + 40);
-        ctx.fillText(`Category: ${analysis.category}`, 50, analysisY + 70);
-        ctx.fillText(`Impact Level: ${analysis.impact}`, 50, analysisY + 100);
         ctx.fillText(`Z-Score: ${analysis.zScore.toFixed(4)}`, 400, analysisY + 70);
         ctx.fillText(`P-Score: ${analysis.pScore.toFixed(4)}`, 400, analysisY + 100);
         
