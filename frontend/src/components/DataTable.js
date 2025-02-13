@@ -18,14 +18,16 @@ export const DataTable = ({ data }) => {
         <table>
           <thead>
             <tr>
+              <th>#</th>
               <th>Dimensions</th>
               <th>P Score</th>
               <th>Z Score</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
-              <tr key={index}>
+            {data.map((row) => (
+              <tr key={row.index}>
+                <td>{row.index}</td>
                 <td>{row.Dimensions}</td>
                 <td>{typeof row["P Score"] === 'number' ? row["P Score"].toFixed(4) : 'N/A'}</td>
                 <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toFixed(4) : 'N/A'}</td>

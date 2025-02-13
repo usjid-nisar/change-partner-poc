@@ -268,7 +268,8 @@ const validateFile = async (filePath) => {
 // Process data
 const processData = (data) => {
     // Map and normalize the data
-    const processedData = data.map(row => ({
+    const processedData = data.map((row, index) => ({
+        index: index + 1, // Add 1-based index
         Dimensions: row.Dimension || row['Dimension'],
         "Z Score": Number(row['Z-Score'] || row['Z Score']),
         "P Score": Number(row['P-Value'] || row['P Score'])
@@ -280,6 +281,11 @@ const processData = (data) => {
             return b["P Score"] - a["P Score"];
         }
         return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
+    });
+    
+    // Reindex after sorting
+    sortedData.forEach((row, index) => {
+        row.index = index + 1;
     });
     
     return {

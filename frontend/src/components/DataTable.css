@@ -41,4 +41,17 @@ tr:hover {
 
 .category-low td:last-child {
   color: #4caf50;
+}
+
+// Add styling for the index column
+td:first-child,
+th:first-child {
+  width: 50px;
+  text-align: center;
+  color: #666;
+  font-weight: 500;
+}
+
+th:first-child {
+  background-color: #f0f0f0;
 } 
