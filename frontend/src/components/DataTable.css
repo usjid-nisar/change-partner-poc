@@ -148,22 +148,108 @@ th:first-child {
 /* Add these new styles */
 .table-controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
+/* Top row with search and entries info */
+.table-top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Search box styling */
+.search-box {
+  position: relative;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 2.2rem 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.clear-search:hover {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+/* Bottom row with table info and rows per page */
+.table-bottom-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Table info styling */
+.table-info {
+  display: flex;
+  gap: 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Rows per page styling */
 .rows-per-page {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  background-color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
 }
 
 .rows-per-page label {
   color: #666;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .rows-select {
@@ -174,10 +260,11 @@ th:first-child {
   cursor: pointer;
   font-size: 0.9rem;
   min-width: 70px;
+  color: #333;
 }
 
 .rows-select:hover {
-  border-color: #999;
+  border-color: #2196F3;
 }
 
 .rows-select:focus {
@@ -186,23 +273,28 @@ th:first-child {
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
 }
 
-/* Update existing table-info style */
-.table-info {
-  display: flex;
-  gap: 1rem;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* Responsive styles */
-@media (max-width: 600px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .table-controls {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 0.75rem;
   }
-  
+
+  .table-top-controls,
+  .table-bottom-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
   .table-info {
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .rows-per-page {
+    justify-content: space-between;
   }
 } 
