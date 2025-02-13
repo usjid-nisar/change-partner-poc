@@ -54,4 +54,12 @@ th:first-child {
 
 th:first-child {
   background-color: #f0f0f0;
+}
+
+.duplicate-p-score {
+  background-color: #fff3cd;
+}
+
+.duplicate-p-score:hover {
+  background-color: #ffecb5;
 } 

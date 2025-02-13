@@ -11,6 +11,13 @@ export const DataTable = ({ data }) => {
     );
   }
 
+  // Create a map of P Scores and their frequencies
+  const pScoreFrequency = data.reduce((acc, row) => {
+    const pScore = row["P Score"];
+    acc[pScore] = (acc[pScore] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <div className="table-section">
       <h2>Processed Data</h2>
@@ -26,7 +33,10 @@ export const DataTable = ({ data }) => {
           </thead>
           <tbody>
             {data.map((row) => (
-              <tr key={row.index}>
+              <tr 
+                key={row.index}
+                className={pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
+              >
                 <td>{row.index}</td>
                 <td>{row.Dimensions}</td>
                 <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
