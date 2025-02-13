@@ -62,4 +62,22 @@ th:first-child {
 
 .duplicate-p-score:hover {
   background-color: #ffecb5;
+}
+
+/* Add styles for signed numbers */
+.positive-z {
+  color: #2196F3;
+}
+
+.negative-z {
+  color: #f44336;
+}
+
+.zero-z {
+  color: #757575;
+}
+
+.z-score-cell {
+  font-family: monospace;
+  font-weight: 500;
 } 

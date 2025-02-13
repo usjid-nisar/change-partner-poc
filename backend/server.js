@@ -265,7 +265,7 @@ const validateFile = async (filePath) => {
     }
 };
 
-// Process data
+// Process data with signed integer awareness
 const processData = (data) => {
     // Map and normalize the data
     const processedData = data.map((row, index) => ({
@@ -275,23 +275,28 @@ const processData = (data) => {
         "P Score": Number(row['P-Value'] || row['P Score'])
     }));
 
-    // Sort by P Score (descending) and then by absolute Z Score (descending)
+    // Sort by P Score (descending) and then by Z Score (descending)
     const sortedData = processedData.sort((a, b) => {
         // First sort by P Score in descending order
         if (a["P Score"] !== b["P Score"]) {
             return b["P Score"] - a["P Score"];
         }
-        // If P Scores are equal, sort by absolute Z Score in descending order
-        return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
+        
+        // If P Scores are equal, sort by Z Score in descending order
+        // This will naturally put positive numbers before negative ones
+        return b["Z Score"] - a["Z Score"];
     });
     
     // Reindex after sorting
-    sortedData.forEach((row, index) => {
-        row.index = index + 1;
-    });
+    const finalData = sortedData.map((row, index) => ({
+        index: index + 1,
+        Dimensions: row.Dimensions,
+        "Z Score": row["Z Score"],
+        "P Score": row["P Score"]
+    }));
     
     return {
-        data: sortedData
+        data: finalData
     };
 };
 

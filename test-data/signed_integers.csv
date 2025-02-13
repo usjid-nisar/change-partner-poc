@@ -1,0 +1,10 @@
+Dimension,Z-Score,P-Value
+Pos_High,5.0,0.05
+Neg_High,-5.0,0.05
+Pos_Low,1.0,0.05
+Neg_Low,-1.0,0.05
+Equal_Pos,3.0,0.03
+Equal_Neg,-3.0,0.03
+Zero_Score,0.0,0.03
+Mixed_Small,0.5,0.01
+Mixed_Tiny,-0.5,0.01 

@@ -18,6 +18,13 @@ export const DataTable = ({ data }) => {
     return acc;
   }, {});
 
+  // Function to determine Z Score class
+  const getZScoreClass = (zScore) => {
+    if (zScore > 0) return 'positive-z';
+    if (zScore < 0) return 'negative-z';
+    return 'zero-z';
+  };
+
   return (
     <div className="table-section">
       <h2>Processed Data</h2>
@@ -35,12 +42,21 @@ export const DataTable = ({ data }) => {
             {data.map((row) => (
               <tr 
                 key={row.index}
-                className={pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
+                className={`
+                  ${pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
+                  ${getZScoreClass(row["Z Score"])}
+                `}
               >
                 <td>{row.index}</td>
                 <td>{row.Dimensions}</td>
                 <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
-                <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toString() : 'N/A'}</td>
+                <td className="z-score-cell">
+                  {typeof row["Z Score"] === 'number' ? (
+                    <span className={getZScoreClass(row["Z Score"])}>
+                      {row["Z Score"] > 0 ? '+' : ''}{row["Z Score"].toString()}
+                    </span>
+                  ) : 'N/A'}
+                </td>
               </tr>
             ))}
           </tbody>
