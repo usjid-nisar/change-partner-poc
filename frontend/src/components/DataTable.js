@@ -2,6 +2,15 @@ import React from 'react';
 import './DataTable.css';
 
 export const DataTable = ({ data }) => {
+  if (!data || !Array.isArray(data)) {
+    return (
+      <div className="table-section">
+        <h2>Processed Data</h2>
+        <p>No data available</p>
+      </div>
+    );
+  }
+
   return (
     <div className="table-section">
       <h2>Processed Data</h2>
@@ -17,11 +26,11 @@ export const DataTable = ({ data }) => {
           </thead>
           <tbody>
             {data.map((row, index) => (
-              <tr key={index} className={`category-${row.Category.toLowerCase()}`}>
+              <tr key={index} className={`category-${(row.Category || '').toLowerCase()}`}>
                 <td>{row.Dimensions}</td>
-                <td>{Number(row["P Score"]).toFixed(4)}</td>
-                <td>{Number(row["Z Score"]).toFixed(4)}</td>
-                <td>{row.Category}</td>
+                <td>{typeof row["P Score"] === 'number' ? row["P Score"].toFixed(4) : 'N/A'}</td>
+                <td>{typeof row["Z Score"] === 'number' ? row["Z Score"].toFixed(4) : 'N/A'}</td>
+                <td>{row.Category || 'N/A'}</td>
               </tr>
             ))}
           </tbody>

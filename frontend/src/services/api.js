@@ -7,14 +7,27 @@ export const uploadFile = async (formData) => {
       body: formData,
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Upload failed');
+      throw new Error(JSON.stringify({
+        type: data.type,
+        message: data.message
+      }));
     }
 
-    return await response.json();
+    return data;
   } catch (error) {
-    throw new Error(error.message || 'Network error');
+    let errorData;
+    try {
+      errorData = JSON.parse(error.message);
+    } catch {
+      errorData = {
+        type: 'NETWORK_ERROR',
+        message: 'Network error occurred while uploading file'
+      };
+    }
+    throw new Error(JSON.stringify(errorData));
   }
 };
 

@@ -23,10 +23,33 @@ const createRequiredDirs = async () => {
     }
 };
 
-// Multer storage configuration
+// Create error types that match with frontend
+const ErrorTypes = {
+    INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
+    MISSING_COLUMNS: 'MISSING_COLUMNS',
+    INVALID_DATA: 'INVALID_DATA',
+    EMPTY_FILE: 'EMPTY_FILE',
+    FILE_TOO_LARGE: 'FILE_TOO_LARGE',
+    INVALID_NUMERIC_VALUE: 'INVALID_NUMERIC_VALUE',
+    MISSING_FILE: 'MISSING_FILE'
+};
+
+// Create error helper function
+const createError = (type, message) => ({
+    type,
+    message,
+    timestamp: new Date().toISOString()
+});
+
+// Configure multer for file upload
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
-        await createRequiredDirs();
+        // Create uploads directory if it doesn't exist
+        try {
+            await fs.access('uploads');
+        } catch {
+            await fs.mkdir('uploads');
+        }
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
@@ -34,45 +57,26 @@ const storage = multer.diskStorage({
     }
 });
 
-// Add error types
-const ErrorTypes = {
-    INVALID_FILE_TYPE: 'INVALID_FILE_TYPE',
-    MISSING_COLUMNS: 'MISSING_COLUMNS',
-    INVALID_DATA: 'INVALID_DATA',
-    EMPTY_FILE: 'EMPTY_FILE',
-    FILE_TOO_LARGE: 'FILE_TOO_LARGE'
-};
-
-// Add custom error handler
-const createError = (type, message) => ({
-    type,
-    message,
-    timestamp: new Date().toISOString()
-});
-
-// Update file filter with better error handling
+// Configure multer file filter
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['.xlsx', '.csv'];
     const ext = path.extname(file.originalname).toLowerCase();
+    
     if (allowedTypes.includes(ext)) {
         cb(null, true);
     } else {
-        cb(createError(
-            ErrorTypes.INVALID_FILE_TYPE,
-            `Invalid file type. Only ${allowedTypes.join(', ')} files are allowed.`
-        ));
+        cb(new Error('Invalid file type'), false);
     }
 };
 
-// Update multer configuration
-const upload = multer({ 
+// Initialize multer with configuration
+const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { 
-        fileSize: 5 * 1024 * 1024, // 5MB limit
-        files: 1 // Only allow one file
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
     }
-}).single('file');
+});
 
 // Serve static files
 app.use('/static', express.static(path.join(__dirname, 'public')));
@@ -125,70 +129,48 @@ const analyzeHighestDimension = (data) => {
 };
 
 // Update the upload endpoint
-app.post('/api/upload', async (req, res) => {
-    upload(req, res, async function(err) {
-        try {
-            // Handle multer errors
-            if (err instanceof multer.MulterError) {
-                if (err.code === 'LIMIT_FILE_SIZE') {
-                    return res.status(400).json(createError(
-                        ErrorTypes.FILE_TOO_LARGE,
-                        'File is too large. Maximum size is 5MB.'
-                    ));
-                }
-                return res.status(400).json(createError(
-                    ErrorTypes.INVALID_FILE_TYPE,
-                    'File upload error: ' + err.message
-                ));
-            } else if (err) {
-                return res.status(400).json(err); // Custom error from fileFilter
-            }
-
-            // Check if file exists
-            if (!req.file) {
-                return res.status(400).json(createError(
-                    ErrorTypes.INVALID_FILE_TYPE,
-                    'No file uploaded. Please select a file.'
-                ));
-            }
-
-            // Validate file contents
-            const data = await validateFile(req.file.path);
-            
-            // Clean up uploaded file regardless of validation result
-            await fs.unlink(req.file.path).catch(console.error);
-
-            if (!data) {
-                return res.status(400).json(createError(
-                    ErrorTypes.INVALID_DATA,
-                    'Invalid file format or data. Please ensure:\n' +
-                    '1. Required columns (Dimension, Z-Score, P-Value) are present\n' +
-                    '2. All numeric values are valid\n' +
-                    '3. File is not empty'
-                ));
-            }
-
-            const processedResult = processData(data);
-
-            res.json({
-                message: 'File processed successfully',
-                data: processedResult.data,
-                analysis: processedResult.analysis
-            });
-
-        } catch (error) {
-            // Clean up on error
-            if (req.file) {
-                await fs.unlink(req.file.path).catch(console.error);
-            }
-            
-            console.error('Upload error:', error);
-            res.status(500).json(createError(
-                ErrorTypes.INVALID_DATA,
-                'Server error processing file: ' + error.message
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json(createError(
+                ErrorTypes.MISSING_FILE,
+                'No file uploaded'
             ));
         }
-    });
+
+        // Check file size
+        if (req.file.size > 5 * 1024 * 1024) {
+            return res.status(400).json(createError(
+                ErrorTypes.FILE_TOO_LARGE,
+                'File size exceeds 5MB limit'
+            ));
+        }
+
+        const data = await validateFile(req.file.path);
+        const processedResult = processData(data);
+
+        // Clean up uploaded file
+        await fs.unlink(req.file.path).catch(console.error);
+
+        res.json({
+            success: true,
+            message: 'File processed successfully',
+            data: processedResult.data,
+            analysis: processedResult.analysis
+        });
+
+    } catch (error) {
+        // Clean up on error
+        if (req.file) {
+            await fs.unlink(req.file.path).catch(console.error);
+        }
+        
+        const statusCode = error.type ? 400 : 500;
+        res.status(statusCode).json(createError(
+            error.type || ErrorTypes.INVALID_DATA,
+            error.message || 'Server error processing file'
+        ));
+    }
 });
 
 // Health check endpoint
@@ -199,27 +181,39 @@ app.get('/api/health', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
 
-// Update validateFile function with better error handling
+// Update validateFile function with better error messages
 const validateFile = async (filePath) => {
     try {
         let data;
         const fileExt = path.extname(filePath).toLowerCase();
         
-        // Read file based on type
+        // Validate file type
+        if (!fileExt) {
+            throw createError(ErrorTypes.INVALID_FILE_TYPE, 'File must have an extension');
+        }
+        
+        if (!['.xlsx', '.csv'].includes(fileExt)) {
+            throw createError(
+                ErrorTypes.INVALID_FILE_TYPE,
+                'Invalid file type. Only .xlsx and .csv files are allowed'
+            );
+        }
+
+        // Read and validate file content
         if (fileExt === '.csv') {
             const fileContent = await fs.readFile(filePath, 'utf8');
             if (!fileContent.trim()) {
-                throw createError(ErrorTypes.EMPTY_FILE, 'File is empty');
+                throw createError(ErrorTypes.EMPTY_FILE, 'CSV file is empty');
             }
             data = xlsx.utils.sheet_to_json(
                 xlsx.utils.aoa_to_sheet(
                     fileContent.split('\n').map(line => line.split(','))
                 )
             );
-        } else if (fileExt === '.xlsx') {
+        } else {
             const workbook = xlsx.readFile(filePath);
             if (!workbook.SheetNames.length) {
                 throw createError(ErrorTypes.EMPTY_FILE, 'Excel file has no sheets');
@@ -235,9 +229,11 @@ const validateFile = async (filePath) => {
 
         // Validate required columns
         const requiredColumns = ["Dimension", "Z-Score", "P-Value"];
-        const keys = Object.keys(data[0]);
-        const missingColumns = requiredColumns.filter(col => !keys.includes(col));
-        
+        const headers = Object.keys(data[0]);
+        const missingColumns = requiredColumns.filter(col => 
+            !headers.some(header => header.toLowerCase() === col.toLowerCase())
+        );
+
         if (missingColumns.length > 0) {
             throw createError(
                 ErrorTypes.MISSING_COLUMNS,
@@ -245,52 +241,61 @@ const validateFile = async (filePath) => {
             );
         }
 
-        // Convert and validate numeric values
-        return data.map((row, index) => {
-            const pValue = Number(row["P-Value"]);
-            const zScore = Number(row["Z-Score"]);
-            
-            if (isNaN(pValue) || isNaN(zScore)) {
+        // Validate numeric values
+        data.forEach((row, index) => {
+            const rowNumber = index + 2; // Adding 2 because index starts at 0 and we skip header row
+            if (isNaN(Number(row['Z-Score']))) {
                 throw createError(
-                    ErrorTypes.INVALID_DATA,
-                    `Invalid numeric value at row ${index + 1}: P-Value or Z-Score is not a number`
+                    ErrorTypes.INVALID_NUMERIC_VALUE,
+                    `Invalid Z-Score value at row ${rowNumber}`
                 );
             }
-
-            return {
-                "Dimensions": row.Dimension,
-                "P Score": pValue,
-                "Z Score": zScore
-            };
+            if (isNaN(Number(row['P-Value']))) {
+                throw createError(
+                    ErrorTypes.INVALID_NUMERIC_VALUE,
+                    `Invalid P-Value value at row ${rowNumber}`
+                );
+            }
         });
+
+        return data;
     } catch (error) {
         console.error('File validation error:', error);
-        throw error; // Propagate error for handling in upload endpoint
+        throw error.type ? error : createError(ErrorTypes.INVALID_DATA, error.message);
     }
 };
 
 // Process data
 const processData = (data) => {
-    // First process the data as before
+    // Map and normalize the data
     const processedData = data.map(row => ({
-        ...row,
-        Category: Math.abs(row["Z Score"]) > 1.96 ? "High" : 
-                 Math.abs(row["Z Score"]) > 1.645 ? "Medium" : "Low"
-    })).sort((a, b) => {
-        // First sort by P Score in descending order
+        Dimensions: row.Dimension || row['Dimension'],
+        "Z Score": Number(row['Z-Score'] || row['Z Score']),
+        "P Score": Number(row['P-Value'] || row['P Score']),
+        Category: Math.abs(Number(row['Z-Score'] || row['Z Score'])) > 1.96 ? "High" : 
+                 Math.abs(Number(row['Z-Score'] || row['Z Score'])) > 1.645 ? "Medium" : "Low"
+    }));
+
+    // Sort by P Score and Z Score
+    const sortedData = processedData.sort((a, b) => {
         if (b["P Score"] !== a["P Score"]) {
             return b["P Score"] - a["P Score"];
         }
-        // If P Scores are equal, sort by Z Score in descending order
         return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
     });
 
-    // Analyze the highest dimension
-    const analysis = analyzeHighestDimension(processedData);
-
+    // Find the highest impact dimension
+    const highestImpact = sortedData[0];
+    
     return {
-        data: processedData,
-        analysis: analysis
+        data: sortedData,
+        analysis: {
+            dimension: highestImpact.Dimensions,
+            category: highestImpact.Category,
+            zScore: highestImpact["Z Score"],
+            pScore: highestImpact["P Score"],
+            impact: highestImpact.Category
+        }
     };
 };
 

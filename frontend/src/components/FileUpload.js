@@ -38,14 +38,23 @@ export const FileUpload = ({ onUploadSuccess, onError, setLoading }) => {
     const validTypes = ['.xlsx', '.csv'];
     const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     
+    // Validate file extension
     if (!validTypes.includes(fileExt)) {
-      onError(`Invalid file type. Only ${validTypes.join(', ')} files are allowed.`);
-      return;
+        onError(`Invalid file type. Only ${validTypes.join(', ')} files are allowed.`);
+        return;
     }
     
-    if (file.size > 5 * 1024 * 1024) {
-      onError('File is too large. Maximum size is 5MB.');
-      return;
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        onError('File is too large. Maximum size is 5MB.');
+        return;
+    }
+
+    // Validate file name
+    if (!file.name.trim()) {
+        onError('Invalid file name.');
+        return;
     }
 
     setSelectedFile(file);
@@ -54,21 +63,61 @@ export const FileUpload = ({ onUploadSuccess, onError, setLoading }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!selectedFile) {
-      onError('Please select a file first');
-      return;
+        onError('Please select a file first');
+        return;
     }
 
     try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      
-      const response = await uploadFile(formData);
-      onUploadSuccess(response);
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        
+        const response = await uploadFile(formData);
+        onUploadSuccess(response);
     } catch (error) {
-      onError(error.message);
+        let errorData;
+        try {
+            errorData = JSON.parse(error.message);
+        } catch {
+            errorData = {
+                type: 'UNKNOWN_ERROR',
+                message: error.message || 'An unexpected error occurred'
+            };
+        }
+
+        let errorMessage;
+        switch (errorData.type) {
+            case 'INVALID_FILE_TYPE':
+                errorMessage = 'Please upload only Excel (.xlsx) or CSV (.csv) files.';
+                break;
+            case 'MISSING_COLUMNS':
+                errorMessage = 'The file is missing required columns: Dimension, Z-Score, P-Value.';
+                break;
+            case 'INVALID_DATA':
+                errorMessage = 'The file contains invalid data. Please check all values.';
+                break;
+            case 'EMPTY_FILE':
+                errorMessage = 'The uploaded file is empty.';
+                break;
+            case 'FILE_TOO_LARGE':
+                errorMessage = 'File size exceeds 5MB limit.';
+                break;
+            case 'INVALID_NUMERIC_VALUE':
+                errorMessage = 'Some numeric values in the file are invalid.';
+                break;
+            case 'MISSING_FILE':
+                errorMessage = 'No file was selected for upload.';
+                break;
+            case 'NETWORK_ERROR':
+                errorMessage = 'Network error occurred. Please try again.';
+                break;
+            default:
+                errorMessage = errorData.message || 'An unexpected error occurred.';
+        }
+        
+        onError(errorMessage);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 

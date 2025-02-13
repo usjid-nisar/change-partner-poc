@@ -14,6 +14,8 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  border: 2px dashed #2196F3;
+  transition: all 0.3s ease;
 }
 
 .file-input {
@@ -46,4 +48,30 @@
 .requirements ul {
   margin: 10px 0;
   padding-left: 20px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #f44336;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 0.9em;
+    border-left: 4px solid #f44336;
+}
+
+.file-input-container.has-error {
+    border-color: #f44336;
+    background-color: #fff8f8;
+}
+
+.requirements.has-error {
+    border-left: 4px solid #f44336;
+    background-color: #fff8f8;
+}
+
+.error-hint {
+    color: #f44336;
+    font-size: 0.8em;
+    margin-top: 4px;
 } 

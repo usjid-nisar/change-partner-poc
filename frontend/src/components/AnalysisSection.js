@@ -2,7 +2,11 @@ import React from 'react';
 import './AnalysisSection.css';
 
 export const AnalysisSection = ({ analysis }) => {
-  if (!analysis) return null;
+  if (!analysis || !analysis.dimension) return null;
+
+  const formatNumber = (num) => {
+    return typeof num === 'number' ? num.toFixed(4) : 'N/A';
+  };
 
   return (
     <div className="analysis-section">
@@ -18,18 +22,18 @@ export const AnalysisSection = ({ analysis }) => {
         </div>
         <div className="analysis-item">
           <label>Impact Level:</label>
-          <span className={`impact-${analysis.impact.toLowerCase()}`}>
+          <span className={`impact-${(analysis.impact || '').toLowerCase()}`}>
             {analysis.impact}
           </span>
         </div>
         <div className="analysis-scores">
           <div className="score-item">
             <label>Z-Score:</label>
-            <span>{analysis.zScore.toFixed(4)}</span>
+            <span>{formatNumber(analysis.zScore)}</span>
           </div>
           <div className="score-item">
             <label>P-Score:</label>
-            <span>{analysis.pScore.toFixed(4)}</span>
+            <span>{formatNumber(analysis.pScore)}</span>
           </div>
         </div>
       </div>
