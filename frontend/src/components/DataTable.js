@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './DataTable.css';
-import { FiGitBranch } from 'react-icons/fi';
+import SVGComponent from './Svg';
 
 export const DataTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,12 +74,13 @@ export const DataTable = ({ data }) => {
     <div className="table-section">
       <h2>Data Analysis</h2>
       
+      {/* Tab buttons */}
       <div className="tabs">
         <button 
           className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
           onClick={() => setActiveTab('data')}
         >
-          Processed Data
+          Data Table
         </button>
         <button 
           className={`tab-button ${activeTab === 'mindmap' ? 'active' : ''}`}
@@ -89,7 +90,7 @@ export const DataTable = ({ data }) => {
         </button>
       </div>
 
-      {/* Tab Content with animation */}
+      {/* Tab content */}
       <div className={`tab-content ${activeTab === 'data' ? 'active' : ''}`}>
         {activeTab === 'data' && (
           <>
@@ -207,10 +208,8 @@ export const DataTable = ({ data }) => {
 
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
-          <div className="mindmap-placeholder">
-            <FiGitBranch />
-            <p>Mind Map visualization coming soon...</p>
-            <small>This feature is currently under development</small>
+          <div className="mindmap-container">
+            <SVGComponent className="mindmap-svg" />
           </div>
         )}
       </div>
