@@ -208,7 +208,9 @@ export const DataTable = ({ data }) => {
 
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
-          <SVGComponent className="mindmap-svg"  />
+          <div className="mindmap-container">
+            <SVGComponent data={filteredData} />
+          </div>
         )}
       </div>
     </div>

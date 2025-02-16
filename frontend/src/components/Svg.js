@@ -3,83 +3,83 @@ import React from "react";
 
 const textItems = [
   {
-    label: "Risk",
+    label: "Dimension 1",
     d: "4.70",
     transform: "matrix(2.337,0,0,2.337,330.979,386.828)",
     labelClass: "t3",
     dClass: "t3",
   },
   {
-    label: "“I”",
+    label: "Dimension 2",
     d: "2.11",
     transform: "matrix(2.337,0,0,2.337,617.579,284.782)",
     labelClass: "t6",
     dClass: "t6",
   },
   {
-    label: "Negate",
+    label: "Dimension 3",
     d: "1.00",
     transform: "matrix(2.337,0,0,2.337,634.92,550.991)",
     labelClass: "t9",
     dClass: "t9",
   },
   {
-    label: "Focus Present",
+    label: "Dimension 4",
     d: "1.00",
     transform: "matrix(2.337,0,0,2.337,860.548,455.949)",
     labelClass: "t12",
     dClass: "t12",
   },
   {
-    label: "Social",
-    d: "-1.00",
-    transform: "matrix(2.197,0,0,2.197,644.027,701.215)",
-    labelClass: "t15",
-    dClass: "t15",
-  },
-  {
-    label: "Analytic",
-    d: "-.94",
-    transform: "matrix(2.09,0,0,2.09,167.11,698.016)",
-    labelClass: "t15",
-    dClass: "t15",
-  },
-  {
-    label: "Discrepancy",
-    d: ".78",
+    label: "Dimension 5",
+    d: "0.78",
     transform: "matrix(2.167,0,0,2.167,358.988,732.889)",
     labelClass: "t15",
     dClass: "t15",
   },
   {
-    label: "Power",
-    d: "-.64",
-    transform: "matrix(2.337,0,0,2.337,496.695,504.843)",
-    labelClass: "t15",
-    dClass: "t15",
-  },
-  {
-    label: "“you”",
-    d: ".11", // The original d value is incomplete
-    transform: "matrix(2.337,0,0,2.337,516.445,666.313)",
-    labelClass: "t6",
-    dClass: "t6",
-  },
-  {
-    label: "Lack",
-    d: ".56",
+    label: "Dimension 6",
+    d: "0.56",
     transform: "matrix(2.337,0,0,2.337,263.276,517.96)",
     labelClass: "t15",
     dClass: "t15",
   },
   {
-    label: "Focus Past",
-    d: "-.38",
+    label: "Dimension 7",
+    d: "0.11",
+    transform: "matrix(2.337,0,0,2.337,516.445,666.313)",
+    labelClass: "t6",
+    dClass: "t6",
+  },
+  {
+    label: "Dimension 8",
+    d: "-0.38",
     transform: "matrix(2.015,0,0,2.015,103.726,541.244)",
     labelClass: "t15",
     dClass: "t15",
   },
-];
+  {
+    label: "Dimension 9",
+    d: "-0.64",
+    transform: "matrix(2.337,0,0,2.337,496.695,504.843)",
+    labelClass: "t15",
+    dClass: "t15",
+  },
+  {
+    label: "Dimension 10",
+    d: "-0.94",
+    transform: "matrix(2.09,0,0,2.09,167.11,698.016)",
+    labelClass: "t15",
+    dClass: "t15",
+  },
+  {
+    label: "Dimension 11",
+    d: "-1.00",
+    transform: "matrix(2.197,0,0,2.197,644.027,701.215)",
+    labelClass: "t15",
+    dClass: "t15",
+  },
+].sort((a, b) => parseFloat(b.d) - parseFloat(a.d)); // Sort by d value in descending order
 
 export default function Svg() {
   return (
@@ -87,8 +87,8 @@ export default function Svg() {
       version="1.2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1440 1440"
-      width="1440"
-      height="1440"
+      width="80%"
+      height="80%"
     >
       <title>Language Model Conceptual</title>
       <style>{`
