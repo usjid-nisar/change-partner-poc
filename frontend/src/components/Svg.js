@@ -96,21 +96,21 @@ export default function Svg() {
         .s0 { fill: #39256e; stroke: #231f20; stroke-miterlimit: 10; stroke-width: 2 } 
         .s1 { fill: #fefefe; stroke: #231f20; stroke-miterlimit: 10; stroke-width: 2 } 
         .s2 { fill: none; stroke: #050505; stroke-miterlimit: 10; stroke-width: 2 } 
-        .t3 { font-size: 18px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
-        .t4 { font-size: 18px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
-        .t5 { font-size: 18px; fill: #2c2e35; font-family: "Arial Narrow" } 
-        .t6 { font-size: 14px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
-        .t7 { font-size: 14px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
-        .t8 { font-size: 14px; fill: #2c2e35; font-family: "Arial Narrow" } 
-        .t9 { font-size: 12px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
-        .t10 { font-size: 12px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
-        .t11 { font-size: 12px; fill: #2c2e35; font-family: "Arial Narrow" } 
+        .t3 { font-size: 10px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
+        .t4 { font-size: 10px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
+        .t5 { font-size: 10px; fill: #2c2e35; font-family: "Arial Narrow" } 
+        .t6 { font-size: 10px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
+        .t7 { font-size: 10px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
+        .t8 { font-size: 10px; fill: #2c2e35; font-family: "Arial Narrow" } 
+        .t9 { font-size: 10px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
+        .t10 { font-size: 10px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
+        .t11 { font-size: 10px; fill: #2c2e35; font-family: "Arial Narrow" } 
         .t12 { font-size: 10px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
         .t13 { font-size: 10px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
         .t14 { font-size: 10px; fill: #2c2e35; font-family: "Arial Narrow" } 
-        .t15 { font-size: 11px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
-        .t16 { font-size: 11px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
-        .t17 { font-size: 11px; fill: #2c2e35; font-family: "Arial Narrow" } 
+        .t15 { font-size: 10px; fill: #2c2e35; font-weight: bold; font-family: "Arial Narrow" } 
+        .t16 { font-size: 10px; fill: #2c2e35; font-style: italic; font-family: "Arial Narrow" } 
+        .t17 { font-size: 10px; fill: #2c2e35; font-family: "Arial Narrow" } 
       `}</style>
       <g id="Layer 1">
         <path
