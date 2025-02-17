@@ -428,4 +428,11 @@ th:first-child {
 .mindmap-svg {
   max-width: 100%;
   height: auto;
+}
+
+.development-message {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
 } 

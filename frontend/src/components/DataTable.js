@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './DataTable.css';
-import SVGComponent from './Svg';
+
 
 export const DataTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -209,7 +209,7 @@ export const DataTable = ({ data }) => {
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
           <div className="mindmap-container">
-            <SVGComponent data={filteredData} />
+            <p className="development-message">Mind Map visualization is currently under development.</p>
           </div>
         )}
       </div>
