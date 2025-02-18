@@ -131,12 +131,13 @@ const analyzeHighestDimension = (data) => {
 
 // Add this after the existing processData function
 const getRawData = (data) => {
+    // Map the data and sort by index in ascending order
     return data.map((row, index) => ({
         index: index + 1,
         Dimensions: row.Dimension || row['Dimension'],
         "Z Score": Number(row['Z-Score'] || row['Z Score']),
         "P Score": Number(row['P-Value'] || row['P Score'])
-    }));
+    })).sort((a, b) => a.index - b.index); // Sort by index in ascending order
 };
 
 // Modify the /api/upload endpoint to return both processed and raw data
@@ -283,11 +284,11 @@ const processData = (data) => {
     // Filter for P-scores < 0.05 and sort by absolute Z Score
     const sortedData = processedData
         .filter(row => row["P Score"] < 0.05)
-        .filter(row => row["Z Score"] >=  2.0)
+        // .filter(row => row["Z Score"] >=  Math.abs(2.0))
         .sort((a, b) => {
             // First sort by P Score (descending)
             if (a["P Score"] !== b["P Score"]) {
-                return b["P Score"] - a["P Score"];
+                return a["P Score"] - b["P Score"];
             }
             // If P Scores are equal, sort by absolute Z Score (descending)
             return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
