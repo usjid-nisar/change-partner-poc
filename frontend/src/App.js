@@ -5,11 +5,13 @@ import './App.css';
 
 function App() {
   const [processedData, setProcessedData] = useState(null);
+  const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleUploadSuccess = (data) => {
     setProcessedData(data.data);
+    setRawData(data.rawData);
     setError('');
   };
 
@@ -28,9 +30,10 @@ function App() {
         {error && <div className="error-message">{error}</div>}
         {loading && <div className="loading">Processing...</div>}
         
-        {processedData && (
+        {(processedData || rawData) && (
           <DataTable 
-            data={processedData}
+            processedData={processedData}
+            rawData={rawData}
           />
         )}
       </main>

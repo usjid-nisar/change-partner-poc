@@ -2,24 +2,25 @@ import React, { useState, useMemo } from 'react';
 import './DataTable.css';
 
 
-export const DataTable = ({ data }) => {
+export const DataTable = ({ processedData, rawData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('data'); // 'data' or 'mindmap'
+  const [activeTab, setActiveTab] = useState('raw'); // 'raw', 'processed', or 'mindmap'
   
   // Available options for rows per page
   const rowsPerPageOptions = [10, 25, 50, 100];
 
-  // Filter data based on search term - moved before conditional return
+  // Filter data based on active tab and search term
   const filteredData = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
-    return data.filter(row => 
+    const currentData = activeTab === 'raw' ? rawData : processedData;
+    if (!currentData || !Array.isArray(currentData)) return [];
+    return currentData.filter(row => 
       row.Dimensions.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [data, searchTerm]);
+  }, [activeTab, rawData, processedData, searchTerm]);
 
-  if (!data || !Array.isArray(data)) {
+  if (!processedData && !rawData) {
     return (
       <div className="table-section">
         <h2>Data Analysis</h2>
@@ -77,10 +78,16 @@ export const DataTable = ({ data }) => {
       {/* Tab buttons */}
       <div className="tabs">
         <button 
-          className={`tab-button ${activeTab === 'data' ? 'active' : ''}`}
-          onClick={() => setActiveTab('data')}
+          className={`tab-button ${activeTab === 'raw' ? 'active' : ''}`}
+          onClick={() => setActiveTab('raw')}
         >
-          Data Table
+          Raw Data
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'processed' ? 'active' : ''}`}
+          onClick={() => setActiveTab('processed')}
+        >
+          Processed Data
         </button>
         <button 
           className={`tab-button ${activeTab === 'mindmap' ? 'active' : ''}`}
@@ -91,8 +98,8 @@ export const DataTable = ({ data }) => {
       </div>
 
       {/* Tab content */}
-      <div className={`tab-content ${activeTab === 'data' ? 'active' : ''}`}>
-        {activeTab === 'data' && (
+      <div className={`tab-content ${activeTab !== 'mindmap' ? 'active' : ''}`}>
+        {activeTab !== 'mindmap' && (
           <>
             <div className="table-controls">
               <div className="table-top-controls">
@@ -121,7 +128,7 @@ export const DataTable = ({ data }) => {
               <div className="table-bottom-controls">
                 <div className="table-info">
                   <span>
-                    Showing {filteredData.length} of {data.length} entries
+                    Showing {filteredData.length} of {processedData ? processedData.length : rawData.length} entries
                   </span>
                   <span>Page {currentPage} of {totalPages}</span>
                 </div>
@@ -158,8 +165,8 @@ export const DataTable = ({ data }) => {
                     <tr 
                       key={row.index}
                       className={`
-                        ${pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
-                        ${getZScoreClass(row["Z Score"])}
+                        ${activeTab === 'processed' && pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
+                        ${activeTab === 'processed' ? getZScoreClass(row["Z Score"]) : ''}
                       `}
                     >
                       <td>{row.index}</td>
@@ -167,7 +174,7 @@ export const DataTable = ({ data }) => {
                       <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
                       <td className="z-score-cell">
                         {typeof row["Z Score"] === 'number' ? (
-                          <span className={getZScoreClass(row["Z Score"])}>
+                          <span className={activeTab === 'processed' ? getZScoreClass(row["Z Score"]) : ''}>
                             {row["Z Score"] > 0 ? '+' : ''}{row["Z Score"].toString()}
                           </span>
                         ) : 'N/A'}

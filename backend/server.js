@@ -31,7 +31,8 @@ const ErrorTypes = {
     EMPTY_FILE: 'EMPTY_FILE',
     FILE_TOO_LARGE: 'FILE_TOO_LARGE',
     INVALID_NUMERIC_VALUE: 'INVALID_NUMERIC_VALUE',
-    MISSING_FILE: 'MISSING_FILE'
+    MISSING_FILE: 'MISSING_FILE',
+    NO_FILE: 'NO_FILE'
 };
 
 // Create error helper function
@@ -128,37 +129,41 @@ const analyzeHighestDimension = (data) => {
     };
 };
 
-// Update the upload endpoint
+// Add this after the existing processData function
+const getRawData = (data) => {
+    return data.map((row, index) => ({
+        index: index + 1,
+        Dimensions: row.Dimension || row['Dimension'],
+        "Z Score": Number(row['Z-Score'] || row['Z Score']),
+        "P Score": Number(row['P-Value'] || row['P Score'])
+    }));
+};
+
+// Modify the /api/upload endpoint to return both processed and raw data
 app.post('/api/upload', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json(createError(
-                ErrorTypes.MISSING_FILE,
-                'No file uploaded'
-            ));
+            throw createError(ErrorTypes.NO_FILE, 'No file uploaded');
         }
 
-        // Check file size
-        if (req.file.size > 5 * 1024 * 1024) {
-            return res.status(400).json(createError(
-                ErrorTypes.FILE_TOO_LARGE,
-                'File size exceeds 5MB limit'
-            ));
+        // Validate file size
+        if (req.file.size > 5 * 1024 * 1024) { // 5MB limit
+            throw createError(ErrorTypes.FILE_TOO_LARGE, 'File size exceeds 5MB limit');
         }
 
         const data = await validateFile(req.file.path);
         const processedResult = processData(data);
+        const rawData = getRawData(data);
 
         // Clean up uploaded file
-        await fs.unlink(req.file.path).catch(console.error);
-
-        res.json({
-            success: true,
-            message: 'File processed successfully',
-            data: processedResult.data,
-            analysis: processedResult.analysis
+        fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting file:', err);
         });
 
+        res.json({
+            data: processedResult.data,
+            rawData: rawData
+        });
     } catch (error) {
         // Clean up on error
         if (req.file) {
