@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   const baseSize = Math.min(width, height);
@@ -57,6 +57,9 @@ const SvgIcon = (props) => {
   const [rows, setRows] = useState(2);
   const [columns, setColumns] = useState(3);
 
+  // Add ref to measure visible dimensions
+  const svgRef = useRef(null);
+
   const calculateGridDimensions = (total) => {
     const sqrt = Math.sqrt(total);
     let row = Math.round(sqrt);
@@ -103,7 +106,7 @@ const SvgIcon = (props) => {
 
   const generateGrid = () => {
     const sections = [];
-
+    
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < columns; i++) {
         const x = gridConfig.startX + (i * cellWidth);
@@ -111,17 +114,32 @@ const SvgIcon = (props) => {
         const colorIndex = j * columns + i;
         
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
+        const pieceId = `piece-${i}-${j}`;
 
         sections.push(
-          <path
-            key={`section-${i}-${j}`}
-            d={jigsawPath}
-            fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
-            stroke={gridConfig.lineColor}
-            strokeWidth={gridConfig.lineWidth}
-            filter="url(#shadow)"
-            className="jigsaw-piece"
-          />
+          <g key={`section-${i}-${j}`}>
+            <path
+              id={pieceId}
+              d={jigsawPath}
+              fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
+              stroke={gridConfig.lineColor}
+              strokeWidth={gridConfig.lineWidth}
+              filter="url(#shadow)"
+              className="jigsaw-piece"
+            />
+            <text
+              className="dimension-text"
+              x={x + cellWidth / 2}
+              y={y + cellHeight / 2}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="white"
+              fontSize="14"
+              fontWeight="bold"
+            >
+              Measuring...
+            </text>
+          </g>
         );
       }
     }
@@ -137,6 +155,27 @@ const SvgIcon = (props) => {
       </>
     );
   };
+
+  // Add useEffect to measure visible dimensions after render
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const updateDimensions = () => {
+      const svg = svgRef.current;
+      const pieces = svg.querySelectorAll('.jigsaw-piece');
+      const texts = svg.querySelectorAll('.dimension-text');
+
+      pieces.forEach((piece, index) => {
+        const bbox = piece.getBBox();
+        const visibleWidth = Math.round(bbox.width);
+        const visibleHeight = Math.round(bbox.height);
+        texts[index].textContent = `${visibleWidth}x${visibleHeight}`;
+      });
+    };
+
+    // Small delay to ensure SVG is fully rendered
+    setTimeout(updateDimensions, 100);
+  }, [rows, columns, totalBoxes]);
 
   return (
     <div className="mindmap-container">
@@ -167,6 +206,7 @@ const SvgIcon = (props) => {
       </div>
 
       <svg
+        ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
         width="1440"
         height="1440"
