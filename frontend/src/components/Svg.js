@@ -106,12 +106,13 @@ const SvgIcon = (props) => {
 
   const generateGrid = () => {
     const sections = [];
+    let boxCount = 0;
     
-    for (let j = 0; j < rows; j++) {
-      for (let i = 0; i < columns; i++) {
+    for (let j = 0; j < rows && boxCount < totalBoxes; j++) {
+      for (let i = 0; i < columns && boxCount < totalBoxes; i++) {
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
-        const colorIndex = j * columns + i;
+        const colorIndex = boxCount;
         
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
         const pieceId = `piece-${i}-${j}`;
@@ -141,6 +142,8 @@ const SvgIcon = (props) => {
             </text>
           </g>
         );
+
+        boxCount++;
       }
     }
 
