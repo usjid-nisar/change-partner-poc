@@ -167,15 +167,14 @@ const SvgIcon = (props) => {
 
       pieces.forEach((piece, index) => {
         const bbox = piece.getBBox();
-        const visibleWidth = Math.round(bbox.width);
-        const visibleHeight = Math.round(bbox.height);
-        texts[index].textContent = `${visibleWidth}x${visibleHeight}`;
+        const area = Math.round(bbox.width * bbox.height);
+        texts[index].textContent = `${area}px²`;
       });
     };
 
     // Small delay to ensure SVG is fully rendered
     setTimeout(updateDimensions, 100);
-  }, [rows, columns, totalBoxes]);
+  }, [rows, columns, totalBoxes, isGender]);
 
   return (
     <div className="mindmap-container">
