@@ -534,4 +534,33 @@ input:checked + .slider:before {
   padding: 2rem;
   color: #666;
   font-style: italic;
+}
+
+/* Update grid styles */
+.grid-lines path {
+  stroke-dasharray: 4;
+  opacity: 0.3;
+  vector-effect: non-scaling-stroke;
+}
+
+.grid-lines circle {
+  opacity: 0.5;
+  fill: #666;
+  r: 2;
+}
+
+.grid-lines path:hover {
+  opacity: 0.6;
+  stroke: #2196F3;
+}
+
+.grid-lines circle:hover {
+  opacity: 1;
+  r: 4;
+  transition: all 0.2s ease;
+}
+
+.mindmap-svg {
+  max-width: 100%;
+  height: auto;
 } 
