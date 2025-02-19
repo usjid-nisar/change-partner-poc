@@ -539,28 +539,94 @@ input:checked + .slider:before {
 /* Update grid styles */
 .grid-lines path {
   stroke-dasharray: 4;
-  opacity: 0.3;
+  opacity: 0.8;
   vector-effect: non-scaling-stroke;
+  transition: all 0.3s ease;
+}
+
+.grid-lines path:hover {
+  opacity: 1;
+  filter: brightness(1.1);
+  transform: scale(1.01);
 }
 
 .grid-lines circle {
   opacity: 0.5;
   fill: #666;
   r: 2;
-}
-
-.grid-lines path:hover {
-  opacity: 0.6;
-  stroke: #2196F3;
+  transition: all 0.2s ease;
 }
 
 .grid-lines circle:hover {
   opacity: 1;
   r: 4;
-  transition: all 0.2s ease;
 }
 
 .mindmap-svg {
   max-width: 100%;
   height: auto;
+}
+
+.grid-control {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.grid-dimensions {
+  font-size: 0.9rem;
+  color: #666;
+  padding: 0.25rem 0.5rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.grid-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grid-input label {
+  font-size: 0.9rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.grid-input input {
+  width: 60px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.grid-input input:hover {
+  border-color: #2196F3;
+}
+
+.grid-input input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* Hide number input spinners */
+.grid-input input::-webkit-outer-spin-button,
+.grid-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.grid-input input[type=number] {
+  -moz-appearance: textfield;
 } 

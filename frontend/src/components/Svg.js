@@ -1,35 +1,125 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SvgIcon = (props) => {
   const [isGender, setIsGender] = useState("female");
+  const [totalBoxes, setTotalBoxes] = useState(6);
+  const [rows, setRows] = useState(2);
+  const [columns, setColumns] = useState(3);
 
-  // Updated Grid configuration to match silhouette boundaries
+  // Calculate optimal grid dimensions
+  const calculateGridDimensions = (total) => {
+    // Find factors closest to square root
+    const sqrt = Math.sqrt(total);
+    let row = Math.round(sqrt);
+    let col = Math.ceil(total / row);
+    
+    // Adjust if we need more rows
+    while (row * col < total) {
+      row++;
+    }
+    
+    // Try to make it more aesthetic by adjusting aspect ratio
+    if (row * (col - 1) >= total && col > 2) {
+      col--;
+    }
+
+    return { rows: row, columns: col };
+  };
+
+  // Update grid when total boxes changes
+  useEffect(() => {
+    const { rows: r, columns: c } = calculateGridDimensions(totalBoxes);
+    setRows(r);
+    setColumns(c);
+  }, [totalBoxes]);
+
+  // Handle total boxes change
+  const handleTotalBoxesChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (value > 0) setTotalBoxes(value);
+  };
+
+  // Grid configuration with simplified control and colors
   const gridConfig = {
-    startX: 250,     // Left-most point of silhouette
-    endX: 1440,      // Right-most point of silhouette
-    startY: 42,     // Top-most point (near head)
-    endY: 1196,     // Bottom-most point
-    horizontalCells: 15,  // More horizontal cells
-    verticalCells: 20    // More vertical cells
+    // Boundary coordinates
+    startX: 250,
+    endX: 1440,
+    startY: 42,
+    endY: 1196,
+    
+    // Visual settings
+    lineColor: "#ccc",
+    pointColor: "#666",
+    lineWidth: 0.5,
+    pointRadius: 1.5,
+    curveIntensity: {
+      vertical: 10,
+      horizontal: 3
+    },
+    // Color palette for sections (will repeat if more sections than colors)
+    colors: [
+      'rgba(33, 150, 243, 0.1)',   // Blue
+      'rgba(244, 67, 54, 0.1)',    // Red
+      'rgba(76, 175, 80, 0.1)',    // Green
+      'rgba(255, 152, 0, 0.1)',    // Orange
+      'rgba(156, 39, 176, 0.1)',   // Purple
+      'rgba(0, 188, 212, 0.1)',    // Cyan
+      'rgba(255, 87, 34, 0.1)',    // Deep Orange
+      'rgba(233, 30, 99, 0.1)',    // Pink
+      'rgba(3, 169, 244, 0.1)'     // Light Blue
+    ]
   };
 
   // Calculate grid cell sizes
-  const cellWidth = (gridConfig.endX - gridConfig.startX) / gridConfig.horizontalCells;
-  const cellHeight = (gridConfig.endY - gridConfig.startY) / gridConfig.verticalCells;
+  const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
+  const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
-  // Generate grid points and lines
+  // Generate grid sections, lines, and points
   const generateGrid = () => {
+    const sections = [];
     const points = [];
     const verticalPaths = [];
     const horizontalPaths = [];
 
+    // Generate colored sections
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < columns; i++) {
+        const x = gridConfig.startX + (i * cellWidth);
+        const y = gridConfig.startY + (j * cellHeight);
+        const colorIndex = j * columns + i;
+        
+        // Create curved section path
+        const sectionPath = `
+          M ${x} ${y}
+          C ${x + cellWidth/2} ${y - gridConfig.curveIntensity.horizontal},
+            ${x + cellWidth} ${y},
+            ${x + cellWidth} ${y}
+          L ${x + cellWidth} ${y + cellHeight}
+          C ${x + cellWidth/2} ${y + cellHeight - gridConfig.curveIntensity.horizontal},
+            ${x} ${y + cellHeight},
+            ${x} ${y + cellHeight}
+          Z
+        `;
+
+        sections.push(
+          <path
+            key={`section-${i}-${j}`}
+            d={sectionPath}
+            fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
+            stroke={gridConfig.lineColor}
+            strokeWidth={gridConfig.lineWidth}
+          />
+        );
+      }
+    }
+
     // Generate vertical curved lines
-    for (let i = 0; i <= gridConfig.horizontalCells; i++) {
+    for (let i = 0; i <= columns; i++) {
       const x = gridConfig.startX + (i * cellWidth);
       const controlPoints = [
         { x: x, y: gridConfig.startY },
-        { x: x - 10, y: (gridConfig.startY + gridConfig.endY) / 2 }, // Gentler curve
+        { x: x - gridConfig.curveIntensity.vertical, y: (gridConfig.startY + gridConfig.endY) / 2 },
         { x: x, y: gridConfig.endY }
       ];
       
@@ -41,19 +131,19 @@ const SvgIcon = (props) => {
         <path
           key={`v-${i}`}
           d={path}
-          stroke="#ccc"
-          strokeWidth="0.5"
+          stroke={gridConfig.lineColor}
+          strokeWidth={gridConfig.lineWidth}
           fill="none"
         />
       );
     }
 
     // Generate horizontal curved lines
-    for (let j = 0; j <= gridConfig.verticalCells; j++) {
+    for (let j = 0; j <= rows; j++) {
       const y = gridConfig.startY + (j * cellHeight);
       const controlPoints = [
         { x: gridConfig.startX, y: y },
-        { x: (gridConfig.startX + gridConfig.endX) / 2, y: y - 3 }, // Gentler curve
+        { x: (gridConfig.startX + gridConfig.endX) / 2, y: y - gridConfig.curveIntensity.horizontal },
         { x: gridConfig.endX, y: y }
       ];
       
@@ -65,28 +155,28 @@ const SvgIcon = (props) => {
         <path
           key={`h-${j}`}
           d={path}
-          stroke="#ccc"
-          strokeWidth="0.5"
+          stroke={gridConfig.lineColor}
+          strokeWidth={gridConfig.lineWidth}
           fill="none"
         />
       );
 
       // Generate intersection points
-      for (let i = 0; i <= gridConfig.horizontalCells; i++) {
+      for (let i = 0; i <= columns; i++) {
         const x = gridConfig.startX + (i * cellWidth);
         points.push(
           <circle
             key={`p-${i}-${j}`}
             cx={x}
             cy={y}
-            r="1.5" // Even smaller points
-            fill="#666"
+            r={gridConfig.pointRadius}
+            fill={gridConfig.pointColor}
           />
         );
       }
     }
 
-    return [...verticalPaths, ...horizontalPaths, ...points];
+    return [...sections, ...verticalPaths, ...horizontalPaths, ...points];
   };
 
   return (
@@ -103,6 +193,23 @@ const SvgIcon = (props) => {
         </label>
         <span className={`gender-label ${isGender === 'male' ? 'active' : ''}`}>Male</span>
       </div>
+
+      {/* Simplified grid control */}
+      <div className="grid-control">
+        <div className="grid-input">
+          <label>Number of Boxes:</label>
+          <input 
+            type="number" 
+            min="1" 
+            value={totalBoxes}
+            onChange={handleTotalBoxesChange}
+          />
+        </div>
+        <div className="grid-dimensions">
+          {rows}x{columns} grid
+        </div>
+      </div>
+
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="1440"
@@ -113,7 +220,6 @@ const SvgIcon = (props) => {
       >
         {isGender === "female" ? (
           <g>
-            {/* Define clip path using the silhouette */}
             <defs>
               <clipPath id="silhouetteClip">
                 <path
