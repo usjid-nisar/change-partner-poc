@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './DataTable.css';
-
+import SvgIcon from './Svg';
 
 export const DataTable = ({ processedData, rawData }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -215,9 +215,7 @@ export const DataTable = ({ processedData, rawData }) => {
 
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
-          <div className="mindmap-container">
-            <p className="development-message">Mind Map visualization is currently under development.</p>
-          </div>
+          <SvgIcon />
         )}
       </div>
     </div>

@@ -416,18 +416,117 @@ th:first-child {
   }
 }
 
+/* Updated mindmap container and panel styles */
 .mindmap-container {
   width: 100%;
-  height: 600px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  overflow: auto;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 16px;
+  position: relative;
 }
 
 .mindmap-svg {
   max-width: 100%;
   height: auto;
+  margin-top: 2rem;
+}
+
+.gender-switch-container {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.gender-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.gender-label.active {
+  color: #2196F3;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e2e8f0;
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mindmap-container {
+    padding: 4rem 1rem 1rem;
+  }
+  
+  .gender-switch-container {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .gender-label {
+    font-size: 0.85rem;
+  }
 }
 
 .development-message {
