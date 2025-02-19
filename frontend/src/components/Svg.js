@@ -2,56 +2,48 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 
 const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
-  // Size calculations
   const baseSize = Math.min(width, height);
-  const tabRadius = baseSize * 0.15; // Circular connector size
-  const cornerRadius = baseSize * 0.05; // Corner rounding
-  
-  // Tab positions (center points of the circles)
+  const tabRadius = baseSize * 0.15;
+  const cornerRadius = baseSize * 0.05;
+
   const tabs = {
-    top: { x: x + width/2, y: y - tabRadius/2 },
-    right: { x: x + width + tabRadius/2, y: y + height/2 },
-    bottom: { x: x + width/2, y: y + height + tabRadius/2 },
-    left: { x: x - tabRadius/2, y: y + height/2 }
+    top: { x: x + width / 2, y: y - tabRadius / 2 },
+    right: { x: x + width + tabRadius / 2, y: y + height / 2 },
+    bottom: { x: x + width / 2, y: y + height + tabRadius / 2 },
+    left: { x: x - tabRadius / 2, y: y + height / 2 },
   };
 
-  // Determine tab directions based on position
-  // Each piece will have opposite connectors to its neighbors
+  // Ensure opposite pieces interlock correctly
   const tabDirections = {
-    // Top: First row protrudes up, others indent
-    top: j === 0 ? 1 : -1,
-    // Right: Alternate between pieces
-    right: i % 2 === 0 ? 1 : -1,
-    // Bottom: Alternate between pieces
-    bottom: j % 2 === 0 ? 1 : -1,
-    // Left: First column indents, others protrude
-    left: i === 0 ? -1 : 1
+    top: j === 0 ? 0 : (i % 2 === 0 ? 1 : -1),
+    right: i === columns - 1 ? 0 : (j % 2 === 0 ? -1 : 1),
+    bottom: j === rows - 1 ? 0 : -((i % 2 === 0) ? 1 : -1),
+    left: i === 0 ? 0 : -((j % 2 === 0) ? -1 : 1),
   };
 
-  // Create the path with complementary connectors
   return `
     M ${x + cornerRadius} ${y}
-    ${j > 0 ? `
+    ${j > 0 && tabDirections.top !== 0 ? `
       L ${tabs.top.x - tabRadius} ${y}
-      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.top > 0 ? 1 : 0} ${tabs.top.x + tabRadius} ${y}
+      A ${tabRadius} ${tabRadius} 0 0 ${tabDirections.top > 0 ? 1 : 0} ${tabs.top.x + tabRadius} ${y}
     ` : `L ${x + width - cornerRadius} ${y}`}
     L ${x + width - cornerRadius} ${y}
     Q ${x + width} ${y} ${x + width} ${y + cornerRadius}
-    ${i < columns - 1 ? `
+    ${i < columns - 1 && tabDirections.right !== 0 ? `
       L ${x + width} ${tabs.right.y - tabRadius}
-      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.right > 0 ? 1 : 0} ${x + width} ${tabs.right.y + tabRadius}
+      A ${tabRadius} ${tabRadius} 0 0 ${tabDirections.right > 0 ? 1 : 0} ${x + width} ${tabs.right.y + tabRadius}
     ` : ''}
     L ${x + width} ${y + height - cornerRadius}
     Q ${x + width} ${y + height} ${x + width - cornerRadius} ${y + height}
-    ${j < rows - 1 ? `
+    ${j < rows - 1 && tabDirections.bottom !== 0 ? `
       L ${tabs.bottom.x + tabRadius} ${y + height}
-      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.bottom > 0 ? 1 : 0} ${tabs.bottom.x - tabRadius} ${y + height}
+      A ${tabRadius} ${tabRadius} 0 0 ${tabDirections.bottom > 0 ? 1 : 0} ${tabs.bottom.x - tabRadius} ${y + height}
     ` : ''}
     L ${x + cornerRadius} ${y + height}
     Q ${x} ${y + height} ${x} ${y + height - cornerRadius}
-    ${i > 0 ? `
+    ${i > 0 && tabDirections.left !== 0 ? `
       L ${x} ${tabs.left.y + tabRadius}
-      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.left > 0 ? 1 : 0} ${x} ${tabs.left.y - tabRadius}
+      A ${tabRadius} ${tabRadius} 0 0 ${tabDirections.left > 0 ? 1 : 0} ${x} ${tabs.left.y - tabRadius}
     ` : ''}
     L ${x} ${y + cornerRadius}
     Q ${x} ${y} ${x + cornerRadius} ${y}
@@ -65,77 +57,53 @@ const SvgIcon = (props) => {
   const [rows, setRows] = useState(2);
   const [columns, setColumns] = useState(3);
 
-  // Calculate optimal grid dimensions
   const calculateGridDimensions = (total) => {
-    // Find factors closest to square root
     const sqrt = Math.sqrt(total);
     let row = Math.round(sqrt);
     let col = Math.ceil(total / row);
-    
-    // Adjust if we need more rows
-    while (row * col < total) {
-      row++;
-    }
-    
-    // Try to make it more aesthetic by adjusting aspect ratio
-    if (row * (col - 1) >= total && col > 2) {
-      col--;
-    }
+
+    while (row * col < total) row++;
+    if (row * (col - 1) >= total && col > 2) col--;
 
     return { rows: row, columns: col };
   };
 
-  // Update grid when total boxes changes
   useEffect(() => {
     const { rows: r, columns: c } = calculateGridDimensions(totalBoxes);
     setRows(r);
     setColumns(c);
   }, [totalBoxes]);
 
-  // Handle total boxes change
   const handleTotalBoxesChange = (e) => {
     const value = parseInt(e.target.value);
     if (value > 0) setTotalBoxes(value);
   };
 
-  // Update grid configuration with new colors and styles
   const gridConfig = {
-    // Boundary coordinates
     startX: 250,
     endX: 1440,
     startY: 42,
     endY: 1196,
-    
-    // Visual settings
     lineColor: "rgba(255, 255, 255, 0.8)",
     pointColor: "#666",
     lineWidth: 2,
-    pointRadius: 0, // Hide points since we're using the jigsaw style
-    curveIntensity: {
-      vertical: 10,
-      horizontal: 3
-    },
-    // Color palette for sections (will repeat if more sections than colors)
+    pointRadius: 0,
     colors: [
-      'rgba(2, 132, 207, 0.95)',   // #0284cf (jigsaw1 color)
-      'rgba(0, 0, 139, 0.95)',     // #00008B (jigsaw2 color)
-      'rgba(25, 118, 210, 0.95)',   // Additional colors
+      'rgba(2, 132, 207, 0.95)',
+      'rgba(0, 0, 139, 0.95)',
+      'rgba(25, 118, 210, 0.95)',
       'rgba(13, 71, 161, 0.95)',
       'rgba(1, 87, 155, 0.95)',
       'rgba(0, 96, 100, 0.95)'
     ]
   };
 
-  // Calculate grid cell sizes
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
-  // Update generateGrid function
   const generateGrid = () => {
     const sections = [];
-    const points = [];
 
-    // Generate jigsaw sections
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < columns; i++) {
         const x = gridConfig.startX + (i * cellWidth);
@@ -155,20 +123,6 @@ const SvgIcon = (props) => {
             className="jigsaw-piece"
           />
         );
-
-        // Optional: Add center points for debugging
-        if (gridConfig.pointRadius > 0) {
-          points.push(
-            <circle
-              key={`p-${i}-${j}`}
-              cx={x + cellWidth/2}
-              cy={y + cellHeight/2}
-              r={gridConfig.pointRadius}
-              fill={gridConfig.pointColor}
-              className="grid-point"
-            />
-          );
-        }
       }
     }
 
@@ -180,7 +134,6 @@ const SvgIcon = (props) => {
           </filter>
         </defs>
         {sections}
-        {points}
       </>
     );
   };
@@ -200,7 +153,6 @@ const SvgIcon = (props) => {
         <span className={`gender-label ${isGender === 'male' ? 'active' : ''}`}>Male</span>
       </div>
 
-      {/* Simplified grid control */}
       <div className="grid-control">
         <div className="grid-input">
           <label>Number of Boxes:</label>
@@ -211,9 +163,7 @@ const SvgIcon = (props) => {
             onChange={handleTotalBoxesChange}
           />
         </div>
-        <div className="grid-dimensions">
-          {rows}x{columns} grid
-        </div>
+        <div className="grid-dimensions">{rows}x{columns} grid</div>
       </div>
 
       <svg
@@ -253,7 +203,7 @@ const SvgIcon = (props) => {
             {/* Clipped grid */}
             <g clipPath="url(#silhouetteClip)">
               <g className="grid-lines">
-                {generateGrid()}
+        {generateGrid()}
               </g>
             </g>
           </g>
