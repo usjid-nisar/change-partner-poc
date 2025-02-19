@@ -25,6 +25,13 @@ th, td {
 th {
   background-color: #f5f5f5;
   font-weight: 600;
+  position: relative;
+  white-space: nowrap;
+}
+
+th span {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 tr:hover {
@@ -649,4 +656,56 @@ path:hover + .grid-point {
 
 .grid-input input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* Add these new styles for the sortable headers and tooltips */
+.sortable-header {
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help;
+}
+
+.sort-arrow {
+  display: inline-block;
+  font-size: 12px;
+  color: #666;
+  margin-left: 4px;
+}
+
+.tooltip {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-top: 8px;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 20px;
+  border: 6px solid transparent;
+  border-bottom-color: #333;
+}
+
+.header-content:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 } 

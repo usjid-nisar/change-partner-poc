@@ -156,8 +156,32 @@ export const DataTable = ({ processedData, rawData }) => {
                   <tr>
                     <th>#</th>
                     <th>Dimensions</th>
-                    <th>P Score</th>
-                    <th>Z Score</th>
+                    <th className="sortable-header">
+                      <div className="header-content">
+                        P Score
+                        {activeTab === 'processed' && (
+                          <>
+                            <span className="sort-arrow">↑</span>
+                            <div className="tooltip">
+                              Sorted ascending. Only showing P-Score &lt; 0.05
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </th>
+                    <th className="sortable-header">
+                      <div className="header-content">
+                        Z Score
+                        {activeTab === 'processed' && (
+                          <>
+                            <span className="sort-arrow">↓</span>
+                            <div className="tooltip">
+                              Sorted by absolute value (descending)
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
