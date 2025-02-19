@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 
-const generateJigsawPath = (x, y, width, height, isEven) => {
+const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   // Size calculations
   const baseSize = Math.min(width, height);
   const tabRadius = baseSize * 0.15; // Circular connector size
@@ -15,31 +15,44 @@ const generateJigsawPath = (x, y, width, height, isEven) => {
     left: { x: x - tabRadius/2, y: y + height/2 }
   };
 
-  // Determine if tabs should stick out or in
+  // Determine tab directions based on position
+  // Each piece will have opposite connectors to its neighbors
   const tabDirections = {
-    top: isEven ? 1 : -1,
-    right: isEven ? 1 : -1,
-    bottom: isEven ? -1 : 1,
-    left: isEven ? -1 : 1
+    // Top: First row protrudes up, others indent
+    top: j === 0 ? 1 : -1,
+    // Right: Alternate between pieces
+    right: i % 2 === 0 ? 1 : -1,
+    // Bottom: Alternate between pieces
+    bottom: j % 2 === 0 ? 1 : -1,
+    // Left: First column indents, others protrude
+    left: i === 0 ? -1 : 1
   };
 
-  // Create the path
+  // Create the path with complementary connectors
   return `
     M ${x + cornerRadius} ${y}
-    L ${tabs.top.x - tabRadius} ${y}
-    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.top > 0 ? 1 : 0} ${tabs.top.x + tabRadius} ${y}
+    ${j > 0 ? `
+      L ${tabs.top.x - tabRadius} ${y}
+      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.top > 0 ? 1 : 0} ${tabs.top.x + tabRadius} ${y}
+    ` : `L ${x + width - cornerRadius} ${y}`}
     L ${x + width - cornerRadius} ${y}
     Q ${x + width} ${y} ${x + width} ${y + cornerRadius}
-    L ${x + width} ${tabs.right.y - tabRadius}
-    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.right > 0 ? 1 : 0} ${x + width} ${tabs.right.y + tabRadius}
+    ${i < columns - 1 ? `
+      L ${x + width} ${tabs.right.y - tabRadius}
+      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.right > 0 ? 1 : 0} ${x + width} ${tabs.right.y + tabRadius}
+    ` : ''}
     L ${x + width} ${y + height - cornerRadius}
     Q ${x + width} ${y + height} ${x + width - cornerRadius} ${y + height}
-    L ${tabs.bottom.x + tabRadius} ${y + height}
-    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.bottom > 0 ? 1 : 0} ${tabs.bottom.x - tabRadius} ${y + height}
+    ${j < rows - 1 ? `
+      L ${tabs.bottom.x + tabRadius} ${y + height}
+      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.bottom > 0 ? 1 : 0} ${tabs.bottom.x - tabRadius} ${y + height}
+    ` : ''}
     L ${x + cornerRadius} ${y + height}
     Q ${x} ${y + height} ${x} ${y + height - cornerRadius}
-    L ${x} ${tabs.left.y + tabRadius}
-    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.left > 0 ? 1 : 0} ${x} ${tabs.left.y - tabRadius}
+    ${i > 0 ? `
+      L ${x} ${tabs.left.y + tabRadius}
+      A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.left > 0 ? 1 : 0} ${x} ${tabs.left.y - tabRadius}
+    ` : ''}
     L ${x} ${y + cornerRadius}
     Q ${x} ${y} ${x + cornerRadius} ${y}
     Z
@@ -128,9 +141,8 @@ const SvgIcon = (props) => {
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
         const colorIndex = j * columns + i;
-        const isEven = (i + j) % 2 === 0;
         
-        const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, isEven);
+        const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
 
         sections.push(
           <path
@@ -140,20 +152,23 @@ const SvgIcon = (props) => {
             stroke={gridConfig.lineColor}
             strokeWidth={gridConfig.lineWidth}
             filter="url(#shadow)"
+            className="jigsaw-piece"
           />
         );
 
-        // Add intersection points at corners
-        points.push(
-          <circle
-            key={`p-${i}-${j}`}
-            cx={x + cellWidth/2}
-            cy={y + cellHeight/2}
-            r={gridConfig.pointRadius}
-            fill={gridConfig.pointColor}
-            className="grid-point"
-          />
-        );
+        // Optional: Add center points for debugging
+        if (gridConfig.pointRadius > 0) {
+          points.push(
+            <circle
+              key={`p-${i}-${j}`}
+              cx={x + cellWidth/2}
+              cy={y + cellHeight/2}
+              r={gridConfig.pointRadius}
+              fill={gridConfig.pointColor}
+              className="grid-point"
+            />
+          );
+        }
       }
     }
 
