@@ -540,11 +540,13 @@ input:checked + .slider:before {
 .grid-lines path {
   transition: all 0.3s ease;
   cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .grid-lines path:hover {
-  filter: brightness(1.05) drop-shadow(0 0 5px rgba(0,0,0,0.2));
-  transform: scale(1.02);
+  transform: scale(1.02) translateY(-2px);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  z-index: 2;
 }
 
 .grid-point {
@@ -558,22 +560,31 @@ path:hover + .grid-point {
 
 /* Add these new styles for jigsaw effect */
 .jigsaw-piece {
-  transition: transform 0.3s ease;
+  border-radius: 0.5em;
+  transition: all 0.3s ease;
 }
 
 .jigsaw-piece:hover {
-  transform: translate(-2px, -2px);
-  filter: brightness(1.1) drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+  transform: translateY(-4px);
+  filter: brightness(1.1) drop-shadow(0 6px 12px rgba(0,0,0,0.3));
 }
 
-/* Update colors to be more vibrant */
+/* Update colors to match the original jigsaw pieces */
 :root {
-  --jigsaw-color-1: rgba(33, 150, 243, 0.8);
-  --jigsaw-color-2: rgba(244, 67, 54, 0.8);
-  --jigsaw-color-3: rgba(76, 175, 80, 0.8);
-  --jigsaw-color-4: rgba(255, 152, 0, 0.8);
-  --jigsaw-color-5: rgba(156, 39, 176, 0.8);
-  --jigsaw-color-6: rgba(0, 188, 212, 0.8);
+  --jigsaw-primary: #0284cf;
+  --jigsaw-secondary: #00008B;
+  --jigsaw-connector: #ffffff;
+}
+
+/* Add smooth transitions */
+.grid-lines path {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Add connector highlight effect */
+.grid-lines path:hover {
+  stroke: var(--jigsaw-connector);
+  stroke-width: 3;
 }
 
 .grid-control {

@@ -2,35 +2,46 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 
 const generateJigsawPath = (x, y, width, height, isEven) => {
-  const tabSize = Math.min(width, height) * 0.2; // Size of the jigsaw tabs
-  const radius = Math.min(width, height) * 0.1; // Corner radius
+  // Size calculations
+  const baseSize = Math.min(width, height);
+  const tabRadius = baseSize * 0.15; // Circular connector size
+  const cornerRadius = baseSize * 0.05; // Corner rounding
   
-  // Calculate tab positions and curves
-  const tabIn = isEven ? -tabSize : tabSize;
-  const tabOut = isEven ? tabSize : -tabSize;
-  
+  // Tab positions (center points of the circles)
+  const tabs = {
+    top: { x: x + width/2, y: y - tabRadius/2 },
+    right: { x: x + width + tabRadius/2, y: y + height/2 },
+    bottom: { x: x + width/2, y: y + height + tabRadius/2 },
+    left: { x: x - tabRadius/2, y: y + height/2 }
+  };
+
+  // Determine if tabs should stick out or in
+  const tabDirections = {
+    top: isEven ? 1 : -1,
+    right: isEven ? 1 : -1,
+    bottom: isEven ? -1 : 1,
+    left: isEven ? -1 : 1
+  };
+
+  // Create the path
   return `
-    M ${x + radius} ${y}
-    L ${x + width/2 - tabSize} ${y}
-    Q ${x + width/2} ${y} ${x + width/2} ${y + tabIn}
-    Q ${x + width/2} ${y + tabSize} ${x + width/2 + tabSize} ${y}
-    L ${x + width - radius} ${y}
-    Q ${x + width} ${y} ${x + width} ${y + radius}
-    L ${x + width} ${y + height/2 - tabSize}
-    Q ${x + width} ${y + height/2} ${x + width + tabOut} ${y + height/2}
-    Q ${x + width + tabSize} ${y + height/2} ${x + width} ${y + height/2 + tabSize}
-    L ${x + width} ${y + height - radius}
-    Q ${x + width} ${y + height} ${x + width - radius} ${y + height}
-    L ${x + width/2 + tabSize} ${y + height}
-    Q ${x + width/2} ${y + height} ${x + width/2} ${y + height - tabIn}
-    Q ${x + width/2} ${y + height - tabSize} ${x + width/2 - tabSize} ${y + height}
-    L ${x + radius} ${y + height}
-    Q ${x} ${y + height} ${x} ${y + height - radius}
-    L ${x} ${y + height/2 + tabSize}
-    Q ${x} ${y + height/2} ${x - tabOut} ${y + height/2}
-    Q ${x - tabSize} ${y + height/2} ${x} ${y + height/2 - tabSize}
-    L ${x} ${y + radius}
-    Q ${x} ${y} ${x + radius} ${y}
+    M ${x + cornerRadius} ${y}
+    L ${tabs.top.x - tabRadius} ${y}
+    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.top > 0 ? 1 : 0} ${tabs.top.x + tabRadius} ${y}
+    L ${x + width - cornerRadius} ${y}
+    Q ${x + width} ${y} ${x + width} ${y + cornerRadius}
+    L ${x + width} ${tabs.right.y - tabRadius}
+    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.right > 0 ? 1 : 0} ${x + width} ${tabs.right.y + tabRadius}
+    L ${x + width} ${y + height - cornerRadius}
+    Q ${x + width} ${y + height} ${x + width - cornerRadius} ${y + height}
+    L ${tabs.bottom.x + tabRadius} ${y + height}
+    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.bottom > 0 ? 1 : 0} ${tabs.bottom.x - tabRadius} ${y + height}
+    L ${x + cornerRadius} ${y + height}
+    Q ${x} ${y + height} ${x} ${y + height - cornerRadius}
+    L ${x} ${tabs.left.y + tabRadius}
+    A ${tabRadius} ${tabRadius} 0 1 ${tabDirections.left > 0 ? 1 : 0} ${x} ${tabs.left.y - tabRadius}
+    L ${x} ${y + cornerRadius}
+    Q ${x} ${y} ${x + cornerRadius} ${y}
     Z
   `;
 };
@@ -74,7 +85,7 @@ const SvgIcon = (props) => {
     if (value > 0) setTotalBoxes(value);
   };
 
-  // Grid configuration with simplified control and colors
+  // Update grid configuration with new colors and styles
   const gridConfig = {
     // Boundary coordinates
     startX: 250,
@@ -83,25 +94,22 @@ const SvgIcon = (props) => {
     endY: 1196,
     
     // Visual settings
-    lineColor: "#ccc",
+    lineColor: "rgba(255, 255, 255, 0.8)",
     pointColor: "#666",
-    lineWidth: 0.5,
-    pointRadius: 1.5,
+    lineWidth: 2,
+    pointRadius: 0, // Hide points since we're using the jigsaw style
     curveIntensity: {
       vertical: 10,
       horizontal: 3
     },
     // Color palette for sections (will repeat if more sections than colors)
     colors: [
-      'rgba(33, 150, 243, 0.1)',   // Blue
-      'rgba(244, 67, 54, 0.1)',    // Red
-      'rgba(76, 175, 80, 0.1)',    // Green
-      'rgba(255, 152, 0, 0.1)',    // Orange
-      'rgba(156, 39, 176, 0.1)',   // Purple
-      'rgba(0, 188, 212, 0.1)',    // Cyan
-      'rgba(255, 87, 34, 0.1)',    // Deep Orange
-      'rgba(233, 30, 99, 0.1)',    // Pink
-      'rgba(3, 169, 244, 0.1)'     // Light Blue
+      'rgba(2, 132, 207, 0.95)',   // #0284cf (jigsaw1 color)
+      'rgba(0, 0, 139, 0.95)',     // #00008B (jigsaw2 color)
+      'rgba(25, 118, 210, 0.95)',   // Additional colors
+      'rgba(13, 71, 161, 0.95)',
+      'rgba(1, 87, 155, 0.95)',
+      'rgba(0, 96, 100, 0.95)'
     ]
   };
 
