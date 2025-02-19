@@ -51,7 +51,7 @@ const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   `;
 };
 
-const SvgIcon = (props) => {
+const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
   const [totalBoxes, setTotalBoxes] = useState(6);
   const [rows, setRows] = useState(2);
@@ -72,10 +72,12 @@ const SvgIcon = (props) => {
   };
 
   useEffect(() => {
-    const { rows: r, columns: c } = calculateGridDimensions(totalBoxes);
+    const { rows: r, columns: c } = calculateGridDimensions(
+      processedData ? Math.min(processedData.length, totalBoxes) : totalBoxes
+    );
     setRows(r);
     setColumns(c);
-  }, [totalBoxes]);
+  }, [totalBoxes, processedData]);
 
   const handleTotalBoxesChange = (e) => {
     const value = parseInt(e.target.value);
@@ -117,6 +119,11 @@ const SvgIcon = (props) => {
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
         const pieceId = `piece-${i}-${j}`;
 
+        // Get data for current piece if available
+        const pieceData = processedData && processedData[boxCount];
+        const dimensionText = pieceData ? pieceData.Dimensions : 'No Data';
+        const zScore = pieceData ? `Z: ${pieceData['Z Score'].toFixed(2)}` : '';
+
         sections.push(
           <g key={`section-${i}-${j}`}>
             <path
@@ -131,14 +138,25 @@ const SvgIcon = (props) => {
             <text
               className="dimension-text"
               x={x + cellWidth / 2}
-              y={y + cellHeight / 2}
+              y={y + cellHeight / 2 - 10} // Offset for dimension text
               textAnchor="middle"
               dominantBaseline="middle"
               fill="white"
               fontSize="14"
               fontWeight="bold"
             >
-              Measuring...
+              {dimensionText}
+            </text>
+            <text
+              className="score-text"
+              x={x + cellWidth / 2}
+              y={y + cellHeight / 2 + 15} // Offset for Z-score text
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="white"
+              fontSize="12"
+            >
+              {zScore}
             </text>
           </g>
         );
@@ -158,26 +176,6 @@ const SvgIcon = (props) => {
       </>
     );
   };
-
-  // Add useEffect to measure visible dimensions after render
-  useEffect(() => {
-    if (!svgRef.current) return;
-
-    const updateDimensions = () => {
-      const svg = svgRef.current;
-      const pieces = svg.querySelectorAll('.jigsaw-piece');
-      const texts = svg.querySelectorAll('.dimension-text');
-
-      pieces.forEach((piece, index) => {
-        const bbox = piece.getBBox();
-        const area = Math.round(bbox.width * bbox.height);
-        texts[index].textContent = `${area}px²`;
-      });
-    };
-
-    // Small delay to ensure SVG is fully rendered
-    setTimeout(updateDimensions, 100);
-  }, [rows, columns, totalBoxes, isGender]);
 
   return (
     <div className="mindmap-container">

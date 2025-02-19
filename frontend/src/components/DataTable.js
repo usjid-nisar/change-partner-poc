@@ -239,7 +239,7 @@ export const DataTable = ({ processedData, rawData }) => {
 
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
-          <SvgIcon />
+          <SvgIcon processedData={processedData} />
         )}
       </div>
     </div>
