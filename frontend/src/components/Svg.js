@@ -1,6 +1,40 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 
+const generateJigsawPath = (x, y, width, height, isEven) => {
+  const tabSize = Math.min(width, height) * 0.2; // Size of the jigsaw tabs
+  const radius = Math.min(width, height) * 0.1; // Corner radius
+  
+  // Calculate tab positions and curves
+  const tabIn = isEven ? -tabSize : tabSize;
+  const tabOut = isEven ? tabSize : -tabSize;
+  
+  return `
+    M ${x + radius} ${y}
+    L ${x + width/2 - tabSize} ${y}
+    Q ${x + width/2} ${y} ${x + width/2} ${y + tabIn}
+    Q ${x + width/2} ${y + tabSize} ${x + width/2 + tabSize} ${y}
+    L ${x + width - radius} ${y}
+    Q ${x + width} ${y} ${x + width} ${y + radius}
+    L ${x + width} ${y + height/2 - tabSize}
+    Q ${x + width} ${y + height/2} ${x + width + tabOut} ${y + height/2}
+    Q ${x + width + tabSize} ${y + height/2} ${x + width} ${y + height/2 + tabSize}
+    L ${x + width} ${y + height - radius}
+    Q ${x + width} ${y + height} ${x + width - radius} ${y + height}
+    L ${x + width/2 + tabSize} ${y + height}
+    Q ${x + width/2} ${y + height} ${x + width/2} ${y + height - tabIn}
+    Q ${x + width/2} ${y + height - tabSize} ${x + width/2 - tabSize} ${y + height}
+    L ${x + radius} ${y + height}
+    Q ${x} ${y + height} ${x} ${y + height - radius}
+    L ${x} ${y + height/2 + tabSize}
+    Q ${x} ${y + height/2} ${x - tabOut} ${y + height/2}
+    Q ${x - tabSize} ${y + height/2} ${x} ${y + height/2 - tabSize}
+    L ${x} ${y + radius}
+    Q ${x} ${y} ${x + radius} ${y}
+    Z
+  `;
+};
+
 const SvgIcon = (props) => {
   const [isGender, setIsGender] = useState("female");
   const [totalBoxes, setTotalBoxes] = useState(6);
@@ -75,108 +109,57 @@ const SvgIcon = (props) => {
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
-  // Generate grid sections, lines, and points
+  // Update generateGrid function
   const generateGrid = () => {
     const sections = [];
     const points = [];
-    const verticalPaths = [];
-    const horizontalPaths = [];
 
-    // Generate colored sections
+    // Generate jigsaw sections
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < columns; i++) {
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
         const colorIndex = j * columns + i;
+        const isEven = (i + j) % 2 === 0;
         
-        // Create curved section path
-        const sectionPath = `
-          M ${x} ${y}
-          C ${x + cellWidth/2} ${y - gridConfig.curveIntensity.horizontal},
-            ${x + cellWidth} ${y},
-            ${x + cellWidth} ${y}
-          L ${x + cellWidth} ${y + cellHeight}
-          C ${x + cellWidth/2} ${y + cellHeight - gridConfig.curveIntensity.horizontal},
-            ${x} ${y + cellHeight},
-            ${x} ${y + cellHeight}
-          Z
-        `;
+        const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, isEven);
 
         sections.push(
           <path
             key={`section-${i}-${j}`}
-            d={sectionPath}
+            d={jigsawPath}
             fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
             stroke={gridConfig.lineColor}
             strokeWidth={gridConfig.lineWidth}
+            filter="url(#shadow)"
           />
         );
-      }
-    }
 
-    // Generate vertical curved lines
-    for (let i = 0; i <= columns; i++) {
-      const x = gridConfig.startX + (i * cellWidth);
-      const controlPoints = [
-        { x: x, y: gridConfig.startY },
-        { x: x - gridConfig.curveIntensity.vertical, y: (gridConfig.startY + gridConfig.endY) / 2 },
-        { x: x, y: gridConfig.endY }
-      ];
-      
-      const path = `M ${controlPoints[0].x} ${controlPoints[0].y} 
-                    Q ${controlPoints[1].x} ${controlPoints[1].y}, 
-                    ${controlPoints[2].x} ${controlPoints[2].y}`;
-      
-      verticalPaths.push(
-        <path
-          key={`v-${i}`}
-          d={path}
-          stroke={gridConfig.lineColor}
-          strokeWidth={gridConfig.lineWidth}
-          fill="none"
-        />
-      );
-    }
-
-    // Generate horizontal curved lines
-    for (let j = 0; j <= rows; j++) {
-      const y = gridConfig.startY + (j * cellHeight);
-      const controlPoints = [
-        { x: gridConfig.startX, y: y },
-        { x: (gridConfig.startX + gridConfig.endX) / 2, y: y - gridConfig.curveIntensity.horizontal },
-        { x: gridConfig.endX, y: y }
-      ];
-      
-      const path = `M ${controlPoints[0].x} ${controlPoints[0].y} 
-                    Q ${controlPoints[1].x} ${controlPoints[1].y}, 
-                    ${controlPoints[2].x} ${controlPoints[2].y}`;
-      
-      horizontalPaths.push(
-        <path
-          key={`h-${j}`}
-          d={path}
-          stroke={gridConfig.lineColor}
-          strokeWidth={gridConfig.lineWidth}
-          fill="none"
-        />
-      );
-
-      // Generate intersection points
-      for (let i = 0; i <= columns; i++) {
-        const x = gridConfig.startX + (i * cellWidth);
+        // Add intersection points at corners
         points.push(
           <circle
             key={`p-${i}-${j}`}
-            cx={x}
-            cy={y}
+            cx={x + cellWidth/2}
+            cy={y + cellHeight/2}
             r={gridConfig.pointRadius}
             fill={gridConfig.pointColor}
+            className="grid-point"
           />
         );
       }
     }
 
-    return [...sections, ...verticalPaths, ...horizontalPaths, ...points];
+    return (
+      <>
+        <defs>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.1"/>
+          </filter>
+        </defs>
+        {sections}
+        {points}
+      </>
+    );
   };
 
   return (

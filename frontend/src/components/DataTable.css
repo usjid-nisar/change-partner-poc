@@ -538,33 +538,42 @@ input:checked + .slider:before {
 
 /* Update grid styles */
 .grid-lines path {
-  stroke-dasharray: 4;
-  opacity: 0.8;
-  vector-effect: non-scaling-stroke;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .grid-lines path:hover {
-  opacity: 1;
-  filter: brightness(1.1);
-  transform: scale(1.01);
+  filter: brightness(1.05) drop-shadow(0 0 5px rgba(0,0,0,0.2));
+  transform: scale(1.02);
 }
 
-.grid-lines circle {
-  opacity: 0.5;
-  fill: #666;
-  r: 2;
+.grid-point {
+  opacity: 0;
   transition: all 0.2s ease;
 }
 
-.grid-lines circle:hover {
+path:hover + .grid-point {
   opacity: 1;
-  r: 4;
 }
 
-.mindmap-svg {
-  max-width: 100%;
-  height: auto;
+/* Add these new styles for jigsaw effect */
+.jigsaw-piece {
+  transition: transform 0.3s ease;
+}
+
+.jigsaw-piece:hover {
+  transform: translate(-2px, -2px);
+  filter: brightness(1.1) drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Update colors to be more vibrant */
+:root {
+  --jigsaw-color-1: rgba(33, 150, 243, 0.8);
+  --jigsaw-color-2: rgba(244, 67, 54, 0.8);
+  --jigsaw-color-3: rgba(76, 175, 80, 0.8);
+  --jigsaw-color-4: rgba(255, 152, 0, 0.8);
+  --jigsaw-color-5: rgba(156, 39, 176, 0.8);
+  --jigsaw-color-6: rgba(0, 188, 212, 0.8);
 }
 
 .grid-control {
