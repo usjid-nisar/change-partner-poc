@@ -53,7 +53,6 @@ const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
 
 const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
-  const [totalBoxes, setTotalBoxes] = useState(6);
   const [rows, setRows] = useState(2);
   const [columns, setColumns] = useState(3);
 
@@ -72,17 +71,12 @@ const SvgIcon = ({ processedData, ...props }) => {
   };
 
   useEffect(() => {
-    const { rows: r, columns: c } = calculateGridDimensions(
-      processedData ? Math.min(processedData.length, totalBoxes) : totalBoxes
-    );
-    setRows(r);
-    setColumns(c);
-  }, [totalBoxes, processedData]);
-
-  const handleTotalBoxesChange = (e) => {
-    const value = parseInt(e.target.value);
-    if (value > 0) setTotalBoxes(value);
-  };
+    if (processedData) {
+      const { rows: r, columns: c } = calculateGridDimensions(processedData.length);
+      setRows(r);
+      setColumns(c);
+    }
+  }, [processedData]);
 
   const gridConfig = {
     startX: 320,
@@ -106,23 +100,63 @@ const SvgIcon = ({ processedData, ...props }) => {
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
+  // Add this function to check if a point is within the silhouette
+  const checkPointInSilhouette = (point) => {
+    const svgElement = svgRef.current;
+    if (!svgElement) return false;
+
+    // Create a temporary point element
+    const svgPoint = svgElement.createSVGPoint();
+    svgPoint.x = point.x;
+    svgPoint.y = point.y;
+
+    // Get all path elements within the silhouette
+    const silhouettePath = svgElement.querySelector('.silhouette-path');
+    if (!silhouettePath) return false;
+
+    return silhouettePath.isPointInFill(svgPoint);
+  };
+
   const generateGrid = () => {
     const sections = [];
     let boxCount = 0;
     
-    for (let j = 0; j < rows && boxCount < totalBoxes; j++) {
-      for (let i = 0; i < columns && boxCount < totalBoxes; i++) {
-        const x = gridConfig.startX + (i * cellWidth);
-        const y = gridConfig.startY + (j * cellHeight);
+    // Calculate total grid size (including hidden pieces)
+    const totalColumns = columns + 2;
+    const totalRows = rows + 2;
+    const offsetX = -cellWidth;
+    const offsetY = -cellHeight;
+    
+    for (let j = 0; j < totalRows; j++) {
+      for (let i = 0; i < totalColumns; i++) {
+        const x = gridConfig.startX + offsetX + (i * cellWidth);
+        const y = gridConfig.startY + offsetY + (j * cellHeight);
         const colorIndex = boxCount;
         
-        const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
+        const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, totalRows, totalColumns);
         const pieceId = `piece-${i}-${j}`;
 
-        // Get data for current piece if available
-        const pieceData = processedData && processedData[boxCount];
-        const dimensionText = pieceData ? pieceData.Dimensions : 'No Data';
-        const zScore = pieceData ? `Z: ${pieceData['Z Score'].toFixed(2)}` : '';
+        const pieceData = processedData && processedData[boxCount % processedData.length];
+        
+        const centerX = x + cellWidth / 2;
+        const centerY = y + cellHeight / 2;
+        
+        // Check 9 points distributed across the piece
+        const checkPoints = [
+          { x: centerX, y: centerY }, // Center
+          { x: x + cellWidth * 0.2, y: y + cellHeight * 0.2 }, // Top-left
+          { x: x + cellWidth * 0.8, y: y + cellHeight * 0.2 }, // Top-right
+          { x: x + cellWidth * 0.2, y: y + cellHeight * 0.8 }, // Bottom-left
+          { x: x + cellWidth * 0.8, y: y + cellHeight * 0.8 }, // Bottom-right
+          { x: x + cellWidth * 0.5, y: y + cellHeight * 0.2 }, // Top-middle
+          { x: x + cellWidth * 0.5, y: y + cellHeight * 0.8 }, // Bottom-middle
+          { x: x + cellWidth * 0.2, y: y + cellHeight * 0.5 }, // Middle-left
+          { x: x + cellWidth * 0.8, y: y + cellHeight * 0.5 }, // Middle-right
+        ];
+        
+        // A piece is considered visible if more than 60% of its check points are within the silhouette
+        const visiblePoints = checkPoints.filter(point => checkPointInSilhouette(point)).length;
+        const isVisible = visiblePoints >= 6; // At least 6 out of 9 points should be inside
 
         sections.push(
           <g key={`section-${i}-${j}`}>
@@ -135,29 +169,33 @@ const SvgIcon = ({ processedData, ...props }) => {
               filter="url(#shadow)"
               className="jigsaw-piece"
             />
-            <text
-              className="dimension-text"
-              x={x + cellWidth / 2}
-              y={y + cellHeight / 2 - 10} // Offset for dimension text
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="white"
-              fontSize="14"
-              fontWeight="bold"
-            >
-              {dimensionText}
-            </text>
-            <text
-              className="score-text"
-              x={x + cellWidth / 2}
-              y={y + cellHeight / 2 + 15} // Offset for Z-score text
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill="white"
-              fontSize="12"
-            >
-              {zScore}
-            </text>
+            {isVisible && pieceData && (
+              <>
+                <text
+                  className="dimension-text"
+                  x={centerX}
+                  y={centerY - 10}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="white"
+                  fontSize="14"
+                  fontWeight="bold"
+                >
+                  {pieceData.Dimensions}
+                </text>
+                <text
+                  className="score-text"
+                  x={centerX}
+                  y={centerY + 15}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="white"
+                  fontSize="12"
+                >
+                  {`Z: ${pieceData['Z Score'].toFixed(2)}`}
+                </text>
+              </>
+            )}
           </g>
         );
 
@@ -192,19 +230,6 @@ const SvgIcon = ({ processedData, ...props }) => {
         <span className={`gender-label ${isGender === 'male' ? 'active' : ''}`}>Male</span>
       </div>
 
-      <div className="grid-control">
-        <div className="grid-input">
-          <label>Number of Boxes:</label>
-          <input 
-            type="number" 
-            min="1" 
-            value={totalBoxes}
-            onChange={handleTotalBoxesChange}
-          />
-        </div>
-        <div className="grid-dimensions">{rows}x{columns} grid</div>
-      </div>
-
       <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
@@ -226,6 +251,7 @@ const SvgIcon = ({ processedData, ...props }) => {
 
             {/* Background silhouette */}
             <path
+              className="silhouette-path"
               fill='#39256e'
               stroke='#231f20'
               strokeMiterlimit='10'
@@ -243,7 +269,7 @@ const SvgIcon = ({ processedData, ...props }) => {
             {/* Clipped grid */}
             <g clipPath="url(#silhouetteClip)">
               <g className="grid-lines">
-        {generateGrid()}
+            {generateGrid()}
               </g>
             </g>
           </g>
