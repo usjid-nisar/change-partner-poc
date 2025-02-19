@@ -83,10 +83,10 @@ const SvgIcon = (props) => {
   };
 
   const gridConfig = {
-    startX: 250,
-    endX: 1440,
-    startY: 42,
-    endY: 1196,
+    startX: 320,
+    endX: 1220,
+    startY: 68,
+    endY: 900,
     lineColor: "rgba(255, 255, 255, 0.8)",
     pointColor: "#666",
     lineWidth: 2,
