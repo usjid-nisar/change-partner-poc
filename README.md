@@ -12,8 +12,9 @@ A web-based application for analyzing and visualizing dimensional data with Z-Sc
   - Maximum file size: 5MB
 - **Data Processing**:
 
-  - Automatic sorting by P-Score (descending)
+  - Automatic sorting by P-Score (ascending)
   - Secondary sorting by Z-Score (descending)
+  - Filter P-Score ( < 0.05)
   - Handles positive and negative Z-Scores
   - Full decimal precision display
 - **Visualization**:
@@ -31,7 +32,6 @@ A web-based application for analyzing and visualizing dimensional data with Z-Sc
   - Key metrics summary
 
 ## Project Structure
-
 
 ## Technical Stack
 
