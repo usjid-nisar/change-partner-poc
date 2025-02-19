@@ -3,25 +3,12 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
 const fs = require('fs').promises; // Use promises version
-const { createCanvas } = require('canvas');
 const cors = require('cors'); // Add CORS for frontend communication
 
 const app = express();
 app.use(cors()); // Enable CORS
 app.use(express.json());
 
-// Create required directories
-const createRequiredDirs = async () => {
-    const dirs = ['uploads', 'public'];
-    for (const dir of dirs) {
-        try {
-            await fs.access(dir);
-        } catch {
-            await fs.mkdir(dir);
-            console.log(`Created ${dir} directory`);
-        }
-    }
-};
 
 // Create error types that match with frontend
 const ErrorTypes = {
@@ -104,29 +91,6 @@ const dimensionMappings = {
     
     // Default category for unmapped dimensions
     "DEFAULT": "Uncategorized"
-};
-
-// Add function to identify highest dimension
-const analyzeHighestDimension = (data) => {
-    // Sort by absolute Z Score in descending order
-    const sortedByZScore = [...data].sort((a, b) => 
-        Math.abs(b["Z Score"]) - Math.abs(a["Z Score"])
-    );
-
-    // Get the highest dimension
-    const highestDimension = sortedByZScore[0];
-    
-    // Map to higher-level category
-    const dimensionName = highestDimension.Dimensions;
-    const category = dimensionMappings[dimensionName] || dimensionMappings["DEFAULT"];
-    
-    return {
-        dimension: dimensionName,
-        category: category,
-        zScore: highestDimension["Z Score"],
-        pScore: highestDimension["P Score"],
-        impact: highestDimension.Category
-    };
 };
 
 // Add this after the existing processData function
