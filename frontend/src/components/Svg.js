@@ -103,12 +103,16 @@ const SvgIcon = (props) => {
 
   const generateGrid = () => {
     const sections = [];
+    let pieceCount = 0;
 
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < columns; i++) {
+        // Stop if we've reached the desired number of pieces
+        if (pieceCount >= totalBoxes) break;
+        
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
-        const colorIndex = j * columns + i;
+        const colorIndex = pieceCount;
         
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
 
@@ -123,7 +127,11 @@ const SvgIcon = (props) => {
             className="jigsaw-piece"
           />
         );
+        
+        pieceCount++;
       }
+      // Break outer loop if we've reached the desired number of pieces
+      if (pieceCount >= totalBoxes) break;
     }
 
     return (
