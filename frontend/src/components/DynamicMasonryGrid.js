@@ -20,12 +20,12 @@ const DynamicMasonryGrid = ({ data }) => {
     };
     setBoxes((prev) => [...prev, newBox]);
   };
-  useEffect(() => {
-    generateSampleBoxes();
-  }, []);
+  // useEffect(() => {
+  //   generateSampleBoxes();
+  // }, [data]);
   // Always add a top boundary fake box.
   const addTopBoundaryBox = () => {
-    addBoxWithSize(100, 100, "", true);
+    addBoxWithSize(120, 170, "", true);
   };
 
   // Clear the grid and re-add the top boundary box.
@@ -50,7 +50,7 @@ const DynamicMasonryGrid = ({ data }) => {
     clearGrid();
     await setTimeout(() => {
       const totalZscore = data.reduce((sum, obj) => sum + obj.zscore, 0);
-      const TOTAL_AREA = 180000; // Adjust overall size as needed
+      const TOTAL_AREA = 120000; // Adjust overall size as needed
 
       data.forEach((obj, i) => {
         const area = (obj.zscore / totalZscore) * TOTAL_AREA;
@@ -282,50 +282,41 @@ const DynamicMasonryGrid = ({ data }) => {
   return (
     <div>
       {/* Update Control Panel */}
-      <div className="control-panel">
-        <h3>Add New Box (Dimensions in pixels)</h3>
-        <input
-          type="number"
-          placeholder="Width (px)"
-          value={widthInput}
-          onChange={(e) => setWidthInput(Number(e.target.value))}
-        />
-        <input
-          type="number"
-          placeholder="Height (px)"
-          value={heightInput}
-          onChange={(e) => setHeightInput(Number(e.target.value))}
-        />
-        <button onClick={addNewBox}>Add Box</button>
-        <button onClick={clearGrid}>Clear All</button>
-        <button onClick={generateSampleBoxes} className="absolute-button">
-          Generate Boxes from Data
-        </button>
-        <button onClick={handleReevaluate} className="absolute-button">
-          Reevaluate Notes
-        </button>
+      <div className="control-panel ">
+        <div className="absolute-button-container">
+          <button onClick={generateSampleBoxes} className="absolute-button">
+            reGenerate Boxes from Data
+          </button>
+          <button onClick={handleReevaluate} className="absolute-button">
+            Reevaluate Notes
+          </button>
+        </div>
       </div>
 
       {/* Masonry grid */}
-      <div
-        className="masonry grid"
-        ref={containerRef}
-        style={{ position: "relative" }}
-      >
-        <div className="masonry-sizer" style={{ width: "1px" }}></div>
-        {boxes.map((box) => (
-          <div
-            key={box.id}
-            className={`item ${box.isFake ? "fake-box top-boundary left" : ""}`}
-            style={{ width: box.width + "px", height: box.height + "px" }}
-          >
-            {!box.isFake && (
-              <div className="inner" style={{ whiteSpace: "pre-line" }}>
-                {box.label}
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="masked-container">
+        <div
+          className="masonry grid "
+          ref={containerRef}
+          style={{ position: "relative" }}
+        >
+          <div className="masonry-sizer " style={{ width: "1px" }}></div>
+          {boxes.map((box) => (
+            <div
+              key={box.id}
+              className={`item ${
+                box.isFake ? "fake-box top-boundary left" : ""
+              }`}
+              style={{ width: box.width + "px", height: box.height + "px" }}
+            >
+              {!box.isFake && (
+                <div className="inner" style={{ whiteSpace: "pre-line" }}>
+                  {box.label}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

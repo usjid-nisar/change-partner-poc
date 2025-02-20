@@ -36,8 +36,8 @@
 
 .masonry {
   /* background: #ccc; */
-  width: 550px;
-  max-width: 550px;
+  width: 450px;
+  max-width: 450px;
   margin: 0 auto;
   position: relative;
 }
@@ -109,4 +109,20 @@
 
 .reevaluate-button:hover {
   background-color: #45a049;
+}
+
+.masked-container {
+  width: 170%;
+  height: 170%;
+  /* Using an external SVG file as the mask */
+  mask: url("Female_Shilloute.svg") no-repeat center / contain;
+  -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
+}
+
+.absolute-button-container {
+  position: absolute;
+  left: 0;
+  top: -100px;
+  width: 100%;
+  height: 100%;
 }
