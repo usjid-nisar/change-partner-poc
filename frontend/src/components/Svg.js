@@ -51,9 +51,9 @@ const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   `;
 };
 
-const SvgIcon = (props) => {
+const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
-  const [totalBoxes, setTotalBoxes] = useState(6);
+  const [showCategory, setShowCategory] = useState(false);
   const [rows, setRows] = useState(2);
   const [columns, setColumns] = useState(3);
 
@@ -69,76 +69,98 @@ const SvgIcon = (props) => {
   };
 
   useEffect(() => {
-    const { rows: r, columns: c } = calculateGridDimensions(totalBoxes);
-    setRows(r);
-    setColumns(c);
-  }, [totalBoxes]);
-
-  const handleTotalBoxesChange = (e) => {
-    const value = parseInt(e.target.value);
-    if (value > 0) setTotalBoxes(value);
-  };
+    if (processedData && processedData.length > 0) {
+      const { rows: r, columns: c } = calculateGridDimensions(processedData.length);
+      setRows(r);
+      setColumns(c);
+    }
+  }, [processedData]);
 
   const gridConfig = {
     startX: 250,
     endX: 1440,
     startY: 42,
     endY: 1196,
-    lineColor: "rgba(255, 255, 255, 0.8)",
+    lineColor: "rgba(0, 0, 0, 0.2)",
     pointColor: "#666",
     lineWidth: 2,
     pointRadius: 0,
-    colors: [
-      'rgba(2, 132, 207, 0.95)',
-      'rgba(0, 0, 139, 0.95)',
-      'rgba(25, 118, 210, 0.95)',
-      'rgba(13, 71, 161, 0.95)',
-      'rgba(1, 87, 155, 0.95)',
-      'rgba(0, 96, 100, 0.95)'
-    ]
+    baseColor: "rgba(255, 255, 255, 0.95)", // White color for pieces
   };
 
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
   const generateGrid = () => {
+    if (!processedData || processedData.length === 0) return null;
+
     const sections = [];
     let pieceCount = 0;
 
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < columns; i++) {
-        // Stop if we've reached the desired number of pieces
-        if (pieceCount >= totalBoxes) break;
+        if (pieceCount >= processedData.length) break;
         
+        const dataItem = processedData[pieceCount];
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
-        const colorIndex = pieceCount;
         
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
 
         sections.push(
-          <path
-            key={`section-${i}-${j}`}
-            d={jigsawPath}
-            fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
-            stroke={gridConfig.lineColor}
-            strokeWidth={gridConfig.lineWidth}
-            filter="url(#shadow)"
-            className="jigsaw-piece"
-          />
+          <g key={`section-${i}-${j}`}>
+            <path
+              d={jigsawPath}
+              fill={gridConfig.baseColor}
+              stroke={gridConfig.lineColor}
+              strokeWidth={gridConfig.lineWidth}
+              filter="url(#shadow)"
+              className="jigsaw-piece"
+            />
+            <text
+              x={x + cellWidth / 2}
+              y={y + cellHeight / 2}
+              textAnchor="middle"
+              fill="black"
+              className="piece-text"
+            >
+              <tspan 
+                x={x + cellWidth / 2} 
+                y={y + cellHeight / 2 - 10}
+                className="dimension-text"
+              >
+                {showCategory ? dataItem.highLevelCategory : dataItem.Dimensions}
+              </tspan>
+              <tspan 
+                x={x + cellWidth / 2} 
+                y={y + cellHeight / 2 + 15}
+                className="score-text"
+              >
+                Z: {dataItem["Z Score"].toFixed(2)}
+              </tspan>
+            </text>
+          </g>
         );
         
         pieceCount++;
       }
-      // Break outer loop if we've reached the desired number of pieces
-      if (pieceCount >= totalBoxes) break;
+      if (pieceCount >= processedData.length) break;
     }
 
     return (
       <>
         <defs>
           <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.1"/>
+            <feDropShadow dx="3" dy="3" stdDeviation="4" floodOpacity="0.15"/>
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+            <feOffset dx="2" dy="2" result="offsetblur" />
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="0.2" />
+            </feComponentTransfer>
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
         {sections}
@@ -161,16 +183,20 @@ const SvgIcon = (props) => {
         <span className={`gender-label ${isGender === 'male' ? 'active' : ''}`}>Male</span>
       </div>
 
-      <div className="grid-control">
-        <div className="grid-input">
-          <label>Number of Boxes:</label>
-          <input 
-            type="number" 
-            min="1" 
-            value={totalBoxes}
-            onChange={handleTotalBoxesChange}
+      <div className="category-switch-container">
+        <span className={`category-label ${!showCategory ? 'active' : ''}`}>Dimensions</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={showCategory}
+            onChange={() => setShowCategory(!showCategory)}
           />
-        </div>
+          <span className="slider round"></span>
+        </label>
+        <span className={`category-label ${showCategory ? 'active' : ''}`}>Categories</span>
+      </div>
+
+      <div className="grid-control">
         <div className="grid-dimensions">{rows}x{columns} grid</div>
       </div>
 
