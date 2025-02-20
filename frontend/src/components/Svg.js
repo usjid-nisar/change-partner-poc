@@ -1,11 +1,15 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import DynamicMasonryGrid from "./DynamicMasonryGrid";
 
+
+ 
 const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   const baseSize = Math.min(width, height);
   const tabRadius = baseSize * 0.15;
   const cornerRadius = baseSize * 0.05;
-
+  
+  
   const tabs = {
     top: { x: x + width / 2, y: y - tabRadius / 2 },
     right: { x: x + width + tabRadius / 2, y: y + height / 2 },
@@ -77,10 +81,10 @@ const SvgIcon = ({ processedData, ...props }) => {
   }, [processedData]);
 
   const gridConfig = {
-    startX: 250,
-    endX: 1440,
-    startY: 42,
-    endY: 1196,
+    startX: 450,
+    endX: 1100,
+    startY: 90,
+    endY: 850,
     lineColor: "rgba(0, 0, 0, 0.2)",
     pointColor: "#666",
     lineWidth: 2,
@@ -90,8 +94,18 @@ const SvgIcon = ({ processedData, ...props }) => {
 
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
-
+  const transformDataForMasonry = () => {
+    if (!processedData) return [];
+  
+    return processedData.map((piece) => ({
+      label: piece.Dimensions,
+      zscore: Math.abs(piece["Z Score"]), // Using absolute value since we want positive sizes
+      zlabel: `Z: ${piece["Z Score"].toFixed(2)}`,
+    }));
+  };
   const generateGrid = () => {
+
+    
     if (!processedData || processedData.length === 0) return null;
 
     const sections = [];
@@ -199,6 +213,7 @@ const SvgIcon = ({ processedData, ...props }) => {
       <div className="grid-control">
         <div className="grid-dimensions">{rows}x{columns} grid</div>
       </div>
+      <DynamicMasonryGrid data={transformDataForMasonry()} />
 
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +232,7 @@ const SvgIcon = ({ processedData, ...props }) => {
                 />
               </clipPath>
             </defs>
-
+           
             {/* Background silhouette */}
             <path
               fill='#39256e'
