@@ -156,6 +156,7 @@ export const DataTable = ({ processedData, rawData }) => {
                   <tr>
                     <th>#</th>
                     <th>Dimensions</th>
+                    <th>High Level Category</th>
                     <th className="sortable-header">
                       <div className="header-content">
                         P Score
@@ -195,6 +196,7 @@ export const DataTable = ({ processedData, rawData }) => {
                     >
                       <td>{row.index}</td>
                       <td>{row.Dimensions}</td>
+                      <td>{row.highLevelCategory}</td>
                       <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
                       <td className="z-score-cell">
                         {typeof row["Z Score"] === 'number' ? (
@@ -239,7 +241,7 @@ export const DataTable = ({ processedData, rawData }) => {
 
       <div className={`tab-content ${activeTab === 'mindmap' ? 'active' : ''}`}>
         {activeTab === 'mindmap' && (
-          <SvgIcon />
+          <SvgIcon processedData={processedData} />
         )}
       </div>
     </div>

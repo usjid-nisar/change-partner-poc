@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   const baseSize = Math.min(width, height);
@@ -51,14 +51,11 @@ const generateJigsawPath = (x, y, width, height, i, j, rows, columns) => {
   `;
 };
 
-const SvgIcon = (props) => {
+const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
-  const [totalBoxes, setTotalBoxes] = useState(6);
+  const [showCategory, setShowCategory] = useState(false);
   const [rows, setRows] = useState(2);
   const [columns, setColumns] = useState(3);
-
-  // Add ref to measure visible dimensions
-  const svgRef = useRef(null);
 
   const calculateGridDimensions = (total) => {
     const sqrt = Math.sqrt(total);
@@ -72,112 +69,104 @@ const SvgIcon = (props) => {
   };
 
   useEffect(() => {
-    const { rows: r, columns: c } = calculateGridDimensions(totalBoxes);
-    setRows(r);
-    setColumns(c);
-  }, [totalBoxes]);
-
-  const handleTotalBoxesChange = (e) => {
-    const value = parseInt(e.target.value);
-    if (value > 0) setTotalBoxes(value);
-  };
+    if (processedData && processedData.length > 0) {
+      const { rows: r, columns: c } = calculateGridDimensions(processedData.length);
+      setRows(r);
+      setColumns(c);
+    }
+  }, [processedData]);
 
   const gridConfig = {
-    startX: 320,
-    endX: 1220,
-    startY: 68,
-    endY: 900,
-    lineColor: "rgba(255, 255, 255, 0.8)",
+    startX: 250,
+    endX: 1440,
+    startY: 42,
+    endY: 1196,
+    lineColor: "rgba(0, 0, 0, 0.2)",
     pointColor: "#666",
     lineWidth: 2,
     pointRadius: 0,
-    colors: [
-      'rgba(2, 132, 207, 0.95)',
-      'rgba(0, 0, 139, 0.95)',
-      'rgba(25, 118, 210, 0.95)',
-      'rgba(13, 71, 161, 0.95)',
-      'rgba(1, 87, 155, 0.95)',
-      'rgba(0, 96, 100, 0.95)'
-    ]
+    baseColor: "rgba(255, 255, 255, 0.95)", // White color for pieces
   };
 
   const cellWidth = (gridConfig.endX - gridConfig.startX) / columns;
   const cellHeight = (gridConfig.endY - gridConfig.startY) / rows;
 
   const generateGrid = () => {
+    if (!processedData || processedData.length === 0) return null;
+
     const sections = [];
-    let boxCount = 0;
-    
-    for (let j = 0; j < rows && boxCount < totalBoxes; j++) {
-      for (let i = 0; i < columns && boxCount < totalBoxes; i++) {
+    let pieceCount = 0;
+
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < columns; i++) {
+        if (pieceCount >= processedData.length) break;
+        
+        const dataItem = processedData[pieceCount];
         const x = gridConfig.startX + (i * cellWidth);
         const y = gridConfig.startY + (j * cellHeight);
-        const colorIndex = boxCount;
         
         const jigsawPath = generateJigsawPath(x, y, cellWidth, cellHeight, i, j, rows, columns);
-        const pieceId = `piece-${i}-${j}`;
 
         sections.push(
           <g key={`section-${i}-${j}`}>
             <path
-              id={pieceId}
               d={jigsawPath}
-              fill={gridConfig.colors[colorIndex % gridConfig.colors.length]}
+              fill={gridConfig.baseColor}
               stroke={gridConfig.lineColor}
               strokeWidth={gridConfig.lineWidth}
               filter="url(#shadow)"
               className="jigsaw-piece"
             />
             <text
-              className="dimension-text"
               x={x + cellWidth / 2}
               y={y + cellHeight / 2}
               textAnchor="middle"
-              dominantBaseline="middle"
-              fill="white"
-              fontSize="14"
-              fontWeight="bold"
+              fill="black"
+              className="piece-text"
             >
-              Measuring...
+              <tspan 
+                x={x + cellWidth / 2} 
+                y={y + cellHeight / 2 - 10}
+                className="dimension-text"
+              >
+                {showCategory ? dataItem.highLevelCategory : dataItem.Dimensions}
+              </tspan>
+              <tspan 
+                x={x + cellWidth / 2} 
+                y={y + cellHeight / 2 + 15}
+                className="score-text"
+              >
+                Z: {dataItem["Z Score"].toFixed(2)}
+              </tspan>
             </text>
           </g>
         );
-
-        boxCount++;
+        
+        pieceCount++;
       }
+      if (pieceCount >= processedData.length) break;
     }
 
     return (
       <>
         <defs>
           <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.1"/>
+            <feDropShadow dx="3" dy="3" stdDeviation="4" floodOpacity="0.15"/>
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+            <feOffset dx="2" dy="2" result="offsetblur" />
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="0.2" />
+            </feComponentTransfer>
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
         {sections}
       </>
     );
   };
-
-  // Add useEffect to measure visible dimensions after render
-  useEffect(() => {
-    if (!svgRef.current) return;
-
-    const updateDimensions = () => {
-      const svg = svgRef.current;
-      const pieces = svg.querySelectorAll('.jigsaw-piece');
-      const texts = svg.querySelectorAll('.dimension-text');
-
-      pieces.forEach((piece, index) => {
-        const bbox = piece.getBBox();
-        const area = Math.round(bbox.width * bbox.height);
-        texts[index].textContent = `${area}px²`;
-      });
-    };
-
-    // Small delay to ensure SVG is fully rendered
-    setTimeout(updateDimensions, 100);
-  }, [rows, columns, totalBoxes, isGender]);
 
   return (
     <div className="mindmap-container">
@@ -194,21 +183,24 @@ const SvgIcon = (props) => {
         <span className={`gender-label ${isGender === 'male' ? 'active' : ''}`}>Male</span>
       </div>
 
-      <div className="grid-control">
-        <div className="grid-input">
-          <label>Number of Boxes:</label>
-          <input 
-            type="number" 
-            min="1" 
-            value={totalBoxes}
-            onChange={handleTotalBoxesChange}
+      <div className="category-switch-container">
+        <span className={`category-label ${!showCategory ? 'active' : ''}`}>Dimensions</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={showCategory}
+            onChange={() => setShowCategory(!showCategory)}
           />
-        </div>
+          <span className="slider round"></span>
+        </label>
+        <span className={`category-label ${showCategory ? 'active' : ''}`}>Categories</span>
+      </div>
+
+      <div className="grid-control">
         <div className="grid-dimensions">{rows}x{columns} grid</div>
       </div>
 
       <svg
-        ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
         width="1440"
         height="1440"
