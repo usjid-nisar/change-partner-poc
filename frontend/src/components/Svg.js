@@ -264,8 +264,8 @@ const SvgIcon = ({ processedData, ...props }) => {
       {/* <DynamicMasonryGrid data={transformDataForMasonry()} /> */}
       {/* </div> */}
       <div className="mt-32 overlay-container">
-        <img src="Female_Shilloute.svg" alt="overlay" className="overlay-svg" />
         <DynamicMasonryGrid data={transformDataForMasonry()} />
+        <img src="1.svg" alt="overlay" className="overlay-svg" />
       </div>
     </div>
   );

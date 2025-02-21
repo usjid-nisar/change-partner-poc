@@ -1,6 +1,6 @@
 .masked-container {
-  width: 170%;
-  height: 170%;
+  width: 900px;
+  height: 900px;
   /* Using an external SVG file as the mask */
   mask: url("Female_Shilloute.svg") no-repeat center / contain;
   -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
@@ -15,9 +15,10 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 150%;
-  height: 150%;
+  width: 900px;
+  height: 900px;
   pointer-events: none;
+  z-index: 20;
 }
 
 /* .overlay-svg-mask {

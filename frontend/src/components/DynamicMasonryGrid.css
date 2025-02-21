@@ -69,7 +69,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   pointer-events: none;
-  z-index: 50;
+  z-index: 10;
 }
 
 /* Default rotations for each side */
@@ -111,18 +111,17 @@
   background-color: #45a049;
 }
 
-.masked-container {
-  width: 170%;
-  height: 170%;
-  /* Using an external SVG file as the mask */
-  mask: url("Female_Shilloute.svg") no-repeat center / contain;
-  -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
-}
-
 .absolute-button-container {
   position: absolute;
   left: 0;
   top: -100px;
   width: 100%;
   height: 100%;
+}
+.masked-container {
+  width: 170%;
+  height: 170%;
+  /* Using an external SVG file as the mask */
+  mask: url("Female_Shilloute.svg") no-repeat center / contain;
+  -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
 }

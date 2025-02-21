@@ -298,7 +298,7 @@ const DynamicMasonryGrid = ({ data }) => {
         <div
           className="masonry grid "
           ref={containerRef}
-          style={{ position: "relative" }}
+          style={{ position: "relative", marginTop: "71px" }}
         >
           <div className="masonry-sizer " style={{ width: "1px" }}></div>
           {boxes.map((box) => (
