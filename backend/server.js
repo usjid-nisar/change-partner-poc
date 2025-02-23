@@ -65,9 +65,6 @@ const upload = multer({
   },
 });
 
-// Serve static files
-app.use("/static", express.static(path.join(__dirname, "public")));
-
 // Add dimension mapping configuration
 const dimensionMappings = {
   // Basic emotions mapping
@@ -162,7 +159,13 @@ const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+// Add new static file serving for React build
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
+// Add catch-all route to serve React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
 // Update validateFile function with better error messages
 const validateFile = async (filePath) => {
   try {
