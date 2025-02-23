@@ -25,7 +25,7 @@ const DynamicMasonryGrid = ({ data }) => {
   // }, [data]);
   // Always add a top boundary fake box.
   const addTopBoundaryBox = () => {
-    addBoxWithSize(120, 170, "", true);
+    addBoxWithSize(90, 100, "", true);
   };
 
   // Clear the grid and re-add the top boundary box.
@@ -51,19 +51,19 @@ const DynamicMasonryGrid = ({ data }) => {
     await setTimeout(() => {
       const totalZscore = data.reduce((sum, obj) => sum + obj.zscore, 0);
       const TOTAL_AREA = 120000; // Adjust overall size as needed
+      const gridUnit = 1; // You can adjust this grid unit if desired.
 
-      data.forEach((obj, i) => {
+      data.forEach((obj) => {
+        // Calculate the area for the current box.
         const area = (obj.zscore / totalZscore) * TOTAL_AREA;
-        const ratio = Math.random() * (1.3 - 0.7) + 0.7;
-        let width = Math.round(Math.sqrt(area * ratio));
-        let height = Math.round(Math.sqrt(area / ratio));
+        // Pick a random candidate ratio between 0.7 and 1.3.
+        const candidateRatio = Math.random() * (1.3 - 0.7) + 0.7;
 
-        // Ensure minimum size
-        width = Math.max(width, 100);
-        height = Math.max(height, 100);
+        // Compute snapped dimensions that preserve the area.
+        const { width, height } = computeBestSnappedDimensions(area, gridUnit);
 
-        // Add the box with the dimension label
-        addBoxWithSize(width, height, `${obj.label}\n ${obj.zlabel}`);
+        // Add the box with the computed dimensions.
+        addBoxWithSize(width, height, `${obj.zlabel}`);
       });
     }, 100);
     setTimeout(addPuzzleNotches, 800);
@@ -203,12 +203,12 @@ const DynamicMasonryGrid = ({ data }) => {
               notchY = rect.top - containerRect.top - notchH / 2 - 9;
             } else if (edge.side === "bottom") {
               notchX = centerCoord - containerRect.left - notchW / 2;
-              notchY = rect.bottom - containerRect.top - notchH / 2 + 9;
+              notchY = rect.bottom - containerRect.top - notchH / 2 + 11;
             } else if (edge.side === "left") {
-              notchX = rect.left - containerRect.left - notchH / 2 - 7;
+              notchX = rect.left - containerRect.left - notchH / 2 - 10;
               notchY = centerCoord - containerRect.top - notchW / 2;
             } else if (edge.side === "right") {
-              notchX = rect.right - containerRect.left - notchH / 2 + 7;
+              notchX = rect.right - containerRect.left - notchH / 2 + 10;
               notchY = centerCoord - containerRect.top - notchW / 2;
             }
             const duplicate = addedNotches.some((n) => {
@@ -272,7 +272,42 @@ const DynamicMasonryGrid = ({ data }) => {
   useEffect(() => {
     addTopBoundaryBox();
   }, []);
+  // Snap dimensions to the nearest grid unit while preserving area.
+  const computeSnappedDimensions = (area, candidateRatio, gridUnit = 10) => {
+    // Compute ideal dimensions from area and ratio.
+    const idealWidth = Math.sqrt(area * candidateRatio);
+    const idealHeight = Math.sqrt(area / candidateRatio);
 
+    // Snap the width to the nearest grid unit.
+    const snappedWidth = Math.round(idealWidth / gridUnit) * gridUnit;
+
+    // Calculate height to preserve area exactly, then snap height.
+    const exactHeight = area / snappedWidth;
+    const snappedHeight = Math.round(exactHeight / gridUnit) * gridUnit;
+
+    return { width: snappedWidth, height: snappedHeight };
+  };
+  const computeBestSnappedDimensions = (area, gridUnit = 10) => {
+    let bestError = Infinity;
+    let bestDims = null;
+    // Loop candidate ratios from 0.7 to 1.3 in increments of 0.05.
+    for (let r = 0.7; r <= 1.3; r += 0.05) {
+      const idealWidth = Math.sqrt(area * r);
+      // Snap the width to the grid.
+      const snappedWidth = Math.round(idealWidth / gridUnit) * gridUnit;
+      // Calculate the exact height needed to preserve the area.
+      const exactHeight = area / snappedWidth;
+      // Snap the height to the grid.
+      const snappedHeight = Math.round(exactHeight / gridUnit) * gridUnit;
+      const snappedArea = snappedWidth * snappedHeight;
+      const error = Math.abs(snappedArea - area);
+      if (error < bestError) {
+        bestError = error;
+        bestDims = { width: snappedWidth, height: snappedHeight };
+      }
+    }
+    return bestDims;
+  };
   // Update the handleReevaluate function.
   const handleReevaluate = () => {
     // Just trigger the puzzle notches recalculation.
@@ -311,7 +346,7 @@ const DynamicMasonryGrid = ({ data }) => {
             >
               {!box.isFake && (
                 <div className="inner" style={{ whiteSpace: "pre-line" }}>
-                  {box.label}
+                  <p className=" z-30">{box.zlabel}</p>
                 </div>
               )}
             </div>

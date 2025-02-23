@@ -204,7 +204,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
     await setTimeout(() => {
       // Define overall container dimensions.
       const containerWidth = 520; // Fixed width
-      const TOTAL_AREA = 230000; // Original total area
+      const TOTAL_AREA = 300000; // Original total area
       console.log("TOTAL_AREA", TOTAL_AREA);
       const containerHeight = TOTAL_AREA / containerWidth;
       const containerRect = {
@@ -216,12 +216,10 @@ const DynamicPackeryGrid = ({ data, notches }) => {
 
       // Define obstacles – these areas will be reserved.
       const obstacles = [
-        { x: 0, y: 0, width: 40, height: 1000 },
-        { x: 50, y: 0, width: 90, height: 120 },
-
-        { x: 0, y: 120, width: 90, height: 120 },
-
-        { x: 420, y: 0, width: 140, height: 50 },
+        { x: 473, y: 341, width: 100, height: 1000 },
+        // { x: 50, y: 0, width: 90, height: 120 },
+        // { x: 0, y: 120, width: 90, height: 120 },
+        // { x: 420, y: 0, width: 140, height: 50 },
       ];
 
       const availableAreas = subtractObstacles(containerRect, obstacles);
@@ -293,6 +291,17 @@ const DynamicPackeryGrid = ({ data, notches }) => {
   useEffect(() => {
     generateSampleBoxes();
   }, [data]);
+
+  // Add this useEffect for notches
+  useEffect(() => {
+    if (notches) {
+      setTimeout(() => {
+        addPuzzleNotches();
+      }, 800); // Add a small delay to ensure DOM is ready
+    } else {
+      removePuzzleNotches();
+    }
+  }, [notches]);
 
   const removePuzzleNotches = () => {
     const container = containerRef.current;
@@ -486,16 +495,6 @@ const DynamicPackeryGrid = ({ data, notches }) => {
     });
   };
 
-  useEffect(() => {
-    if (notches) {
-      setTimeout(() => {
-        addPuzzleNotches();
-      }, 1000); // Add a small delay to ensure DOM is ready
-    } else {
-      removePuzzleNotches();
-    }
-  }, [notches]);
-
   return (
     <div className="w-[900px] mx-auto">
       <div className="control-panel">
@@ -509,11 +508,13 @@ const DynamicPackeryGrid = ({ data, notches }) => {
       <div
         className="flex justify-center w-[530px] ml-1"
         style={{
-          width: "830px",
+          width: "570px",
           height: "900px",
-          mask: "url(Female_Shilloute.svg) no-repeat center / contain",
-          "-webkit-mask":
-            "url(Female_Shilloute.svg) no-repeat center / contain",
+          // backgroundColor: "red",
+          mask: "url(3.svg) no-repeat center / contain",
+          "-webkit-mask": "url(3.svg) no-repeat center / contain",
+          margin: "auto",
+          // marginTop: "140px",
         }}
       >
         <div style={{ position: "relative" }}>
@@ -522,7 +523,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
             ref={containerRef}
             style={{
               position: "relative",
-              marginTop: "71px",
+              marginTop: "140px",
               width: "530px",
               height: "auto",
             }}

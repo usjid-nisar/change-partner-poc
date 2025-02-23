@@ -1,10 +1,3 @@
-.masked-container {
-  width: 900px;
-  height: 900px;
-  /* Using an external SVG file as the mask */
-  mask: url("Female_Shilloute.svg") no-repeat center / contain;
-  -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
-}
 .overlay-container {
   position: relative;
   width: 100%;
@@ -21,10 +14,81 @@
   z-index: 20;
 }
 
-/* .overlay-svg-mask {
+.gender-switch-container,
+.category-switch-container,
+.notches-switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.gender-label,
+.category-label,
+.notches-label {
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gender-label.active,
+.category-label.active,
+.notches-label.active {
+  color: #000;
+  font-weight: bold;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin: 0 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
   position: absolute;
+  cursor: pointer;
   top: 0;
   left: 0;
-  width: 170%;
-  height: 170%;
-} */
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
