@@ -9,6 +9,71 @@ const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
   const [showCategory, setShowCategory] = useState(false);
   const [showNotches, setShowNotches] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editableMappings, setEditableMappings] = useState({
+    female: {
+      dimensions: {},
+      categories: {}
+    },
+    male: {
+      dimensions: {},
+      categories: {}
+    }
+  });
+  const [originalMappings, setOriginalMappings] = useState({
+    female: {
+      dimensions: {},
+      categories: {}
+    },
+    male: {
+      dimensions: {},
+      categories: {}
+    }
+  });
+
+  // Initialize mappings when processedData changes
+  React.useEffect(() => {
+    if (processedData) {
+      const newMappings = {
+        female: {
+          dimensions: {},
+          categories: {}
+        },
+        male: {
+          dimensions: {},
+          categories: {}
+        }
+      };
+
+      processedData.forEach(piece => {
+        // Initialize for both genders
+        ['female', 'male'].forEach(gender => {
+          newMappings[gender].dimensions[piece.Dimensions] = piece.Dimensions;
+          newMappings[gender].categories[piece.highLevelCategory] = piece.highLevelCategory;
+        });
+      });
+
+      setEditableMappings(newMappings);
+      setOriginalMappings(newMappings);
+    }
+  }, [processedData]);
+
+  const handleLabelEdit = (gender, type, originalLabel, newLabel) => {
+    setEditableMappings(prev => ({
+      ...prev,
+      [gender]: {
+        ...prev[gender],
+        [type]: {
+          ...prev[gender][type],
+          [originalLabel]: newLabel
+        }
+      }
+    }));
+  };
+
+  const handleReset = () => {
+    setEditableMappings(originalMappings);
+  };
 
   const transformDataForMasonry = () => {
     if (!processedData) return [];
@@ -16,10 +81,10 @@ const SvgIcon = ({ processedData, ...props }) => {
     return processedData.map((piece) => ({
       label: piece.Dimensions,
       category: piece.highLevelCategory,
-      zscore: Math.abs(piece["Z Score"]), // Using absolute value since we want positive sizes
+      zscore: Math.abs(piece["Z Score"]),
       zlabel: showCategory 
-        ? piece.highLevelCategory + `\nZ: ${piece["Z Score"].toFixed(2)}`
-        : piece.Dimensions + `\nZ: ${piece["Z Score"].toFixed(2)}`,
+        ? (editableMappings[isGender].categories[piece.highLevelCategory] || piece.highLevelCategory) + `\nZ: ${piece["Z Score"].toFixed(2)}`
+        : (editableMappings[isGender].dimensions[piece.Dimensions] || piece.Dimensions) + `\nZ: ${piece["Z Score"].toFixed(2)}`,
     }));
   };
 
@@ -86,6 +151,78 @@ const SvgIcon = ({ processedData, ...props }) => {
           Show Notches
         </span>
       </div>
+
+      <button
+        className="edit-labels-button"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Edit Labels
+      </button>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Edit Labels</h2>
+              <div className="modal-actions">
+                <button 
+                  className="reset-button"
+                  onClick={handleReset}
+                >
+                  Reset All
+                </button>
+                <button 
+                  className="close-button"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            
+            <div className="modal-body">
+              <div className="gender-tabs">
+                <button 
+                  className={isGender === 'female' ? 'active' : ''}
+                  onClick={() => setIsGender('female')}
+                >
+                  Female
+                </button>
+                <button 
+                  className={isGender === 'male' ? 'active' : ''}
+                  onClick={() => setIsGender('male')}
+                >
+                  Male
+                </button>
+              </div>
+
+              <div className="labels-section">
+                <h3>{showCategory ? 'Categories' : 'Dimensions'}</h3>
+                <div className="labels-grid">
+                  {Object.entries(showCategory ? 
+                    editableMappings[isGender].categories : 
+                    editableMappings[isGender].dimensions
+                  ).map(([original, current]) => (
+                    <div key={original} className="label-item">
+                      <span>{original}</span>
+                      <input
+                        type="text"
+                        value={current}
+                        onChange={(e) => handleLabelEdit(
+                          isGender,
+                          showCategory ? 'categories' : 'dimensions',
+                          original,
+                          e.target.value
+                        )}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="relative">
         <div
