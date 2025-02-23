@@ -557,7 +557,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
                       ) : (
                         <span
                           className={`text-[${
-                            (box.width + box.height) / 16
+                            (box.width + box.height) / 30
                           }px] `}
                         >
                           {box.label}
