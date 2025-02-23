@@ -15,8 +15,11 @@ const SvgIcon = ({ processedData, ...props }) => {
 
     return processedData.map((piece) => ({
       label: piece.Dimensions,
+      category: piece.highLevelCategory,
       zscore: Math.abs(piece["Z Score"]), // Using absolute value since we want positive sizes
-      zlabel: piece.Dimensions + `\nZ: ${piece["Z Score"].toFixed(2)}`,
+      zlabel: showCategory 
+        ? piece.highLevelCategory + `\nZ: ${piece["Z Score"].toFixed(2)}`
+        : piece.Dimensions + `\nZ: ${piece["Z Score"].toFixed(2)}`,
     }));
   };
 

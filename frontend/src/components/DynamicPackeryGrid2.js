@@ -544,7 +544,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
               >
                 {!box.isFake && (
                   <div
-                    className="inner hover:shadow-lg cursor-pointer hover:scale-110 transition-all duration-300 bg-gray"
+                    className="inner hover:shadow-lg cursor-pointer  transition-all duration-300 bg-gray"
                     style={{ whiteSpace: "pre-line" }}
                   >
                     <p className="z-30">
