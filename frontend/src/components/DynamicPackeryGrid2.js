@@ -217,6 +217,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
       // Define obstacles – these areas will be reserved.
       const obstacles = [
         { x: 473, y: 341, width: 100, height: 1000 },
+        { x: 0, y: 0, width: 100, height: 100 },
         // { x: 50, y: 0, width: 90, height: 120 },
         // { x: 0, y: 120, width: 90, height: 120 },
         // { x: 420, y: 0, width: 140, height: 50 },
