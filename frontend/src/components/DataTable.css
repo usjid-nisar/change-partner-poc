@@ -2,7 +2,7 @@
   background-color: white;
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 20px 0;
 }
 
@@ -16,7 +16,8 @@ table {
   margin: 20px 0;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
@@ -50,7 +51,6 @@ tr:hover {
   color: #4caf50;
 }
 
-// Add styling for the index column
 td:first-child,
 th:first-child {
   width: 50px;
@@ -73,7 +73,7 @@ th:first-child {
 
 /* Add styles for signed numbers */
 .positive-z {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .negative-z {
@@ -122,9 +122,9 @@ th:first-child {
 }
 
 .page-button.active {
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .page-button:disabled {
@@ -133,7 +133,6 @@ th:first-child {
   color: #999;
 }
 
-/* Responsive pagination */
 @media (max-width: 768px) {
   .pagination {
     gap: 0.25rem;
@@ -145,14 +144,12 @@ th:first-child {
   }
 }
 
-/* Hide some page numbers on very small screens */
 @media (max-width: 480px) {
   .page-button:not(.active):not(:first-child):not(:last-child) {
     display: none;
   }
 }
 
-/* Add these new styles */
 .table-controls {
   display: flex;
   flex-direction: column;
@@ -164,7 +161,6 @@ th:first-child {
   border: 1px solid #e0e0e0;
 }
 
-/* Top row with search and entries info */
 .table-top-controls {
   display: flex;
   justify-content: space-between;
@@ -173,7 +169,6 @@ th:first-child {
   flex-wrap: wrap;
 }
 
-/* Search box styling */
 .search-box {
   position: relative;
   min-width: 250px;
@@ -192,7 +187,7 @@ th:first-child {
 
 .search-input:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
@@ -225,7 +220,6 @@ th:first-child {
   color: #666;
 }
 
-/* Bottom row with table info and rows per page */
 .table-bottom-controls {
   display: flex;
   justify-content: space-between;
@@ -234,7 +228,6 @@ th:first-child {
   flex-wrap: wrap;
 }
 
-/* Table info styling */
 .table-info {
   display: flex;
   gap: 1.5rem;
@@ -242,7 +235,6 @@ th:first-child {
   font-size: 0.9rem;
 }
 
-/* Rows per page styling */
 .rows-per-page {
   display: flex;
   align-items: center;
@@ -271,16 +263,15 @@ th:first-child {
 }
 
 .rows-select:hover {
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .rows-select:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .table-controls {
     padding: 0.75rem;
@@ -306,7 +297,6 @@ th:first-child {
   }
 }
 
-/* Updated tab styles */
 .tabs {
   display: flex;
   gap: 1rem;
@@ -332,23 +322,22 @@ th:first-child {
 }
 
 .tab-button:hover {
-  color: #2196F3;
+  color: #2196f3;
   background-color: rgba(33, 150, 243, 0.04);
 }
 
 .tab-button.active {
-  color: #2196F3;
+  color: #2196f3;
 }
 
-/* Animated underline for active tab */
 .tab-button::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #2196F3;
+  background-color: #2196f3;
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -357,7 +346,6 @@ th:first-child {
   transform: scaleX(1);
 }
 
-/* Tab content transition */
 .tab-content {
   opacity: 0;
   transform: translateY(10px);
@@ -369,7 +357,6 @@ th:first-child {
   transform: translateY(0);
 }
 
-/* Mind Map placeholder with improved styling */
 .mindmap-placeholder {
   display: flex;
   flex-direction: column;
@@ -392,11 +379,10 @@ th:first-child {
 .mindmap-placeholder svg {
   width: 64px;
   height: 64px;
-  color: #2196F3;
+  color: #2196f3;
   opacity: 0.5;
 }
 
-/* Responsive adjustments for tabs */
 @media (max-width: 768px) {
   .tabs {
     gap: 0.5rem;
@@ -411,7 +397,6 @@ th:first-child {
   }
 }
 
-/* Animation keyframes */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -423,7 +408,6 @@ th:first-child {
   }
 }
 
-/* Updated mindmap container and panel styles */
 .mindmap-container {
   width: 100%;
   display: flex;
@@ -433,15 +417,15 @@ th:first-child {
   background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
   border-radius: 16px;
   position: relative;
-  border: 1px solid rgba(0,0,0,0.1);
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .mindmap-svg {
   max-width: 100%;
   height: auto;
   margin-top: 2rem;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 .gender-switch-container {
@@ -491,14 +475,13 @@ th:first-child {
 }
 
 .gender-label.active {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .category-label.active {
-  color: #2196F3;
+  color: #2196f3;
 }
 
-/* The switch - the box around the slider */
 .switch {
   position: relative;
   display: inline-block;
@@ -506,14 +489,12 @@ th:first-child {
   height: 26px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -522,7 +503,7 @@ th:first-child {
   right: 0;
   bottom: 0;
   background-color: #e2e8f0;
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 34px;
 }
 
@@ -534,29 +515,28 @@ th:first-child {
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
   transform: translateX(24px);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .mindmap-container {
     padding: 7rem 1rem 1rem;
   }
-  
+
   .gender-switch-container,
   .category-switch-container {
     top: 1rem;
@@ -564,12 +544,12 @@ input:checked + .slider:before {
     padding: 0.4rem 0.6rem;
     margin-top: 10px;
   }
-  
+
   .gender-switch-container {
     top: 3.5rem;
     margin-top: 10px;
   }
-  
+
   .gender-label,
   .category-label {
     font-size: 0.85rem;
@@ -584,16 +564,15 @@ input:checked + .slider:before {
   font-style: italic;
 }
 
-/* Update grid styles */
 .grid-lines path {
   transition: all 0.3s ease;
   cursor: pointer;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .grid-lines path:hover {
   transform: scale(1.03) translateY(-4px);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
   z-index: 2;
 }
 
@@ -606,7 +585,6 @@ path:hover + .grid-point {
   opacity: 1;
 }
 
-/* Add these new styles for jigsaw effect */
 .jigsaw-piece {
   border-radius: 0.5em;
   transition: all 0.3s ease;
@@ -620,18 +598,10 @@ path:hover + .grid-point {
   fill-opacity: 1;
 }
 
-/* Update colors to match the new white theme */
-:root {
-  --jigsaw-primary: rgb(255, 255, 255);
-  --jigsaw-connector: rgba(0, 0, 0, 0.3);
-}
-
-/* Add smooth transitions */
 .grid-lines path {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Add connector highlight effect */
 .grid-lines path:hover {
   stroke: var(--jigsaw-connector);
   stroke-width: 3;
@@ -683,12 +653,12 @@ path:hover + .grid-point {
 }
 
 .grid-input input:hover {
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .grid-input input:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
 }
 
@@ -699,11 +669,10 @@ path:hover + .grid-point {
   margin: 0;
 }
 
-.grid-input input[type=number] {
+.grid-input input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Add these new styles for the sortable headers and tooltips */
 .sortable-header {
   position: relative;
 }
@@ -737,12 +706,12 @@ path:hover + .grid-point {
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-top: 8px;
 }
 
 .tooltip::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 100%;
   left: 20px;
@@ -779,4 +748,4 @@ path:hover + .grid-point {
 .jigsaw-piece:hover + .piece-text {
   transform: scale(1.05);
   color: rgba(0, 0, 0, 1);
-} 
+}

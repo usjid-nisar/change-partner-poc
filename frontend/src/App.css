@@ -16,10 +16,10 @@
 }
 
 .App-header {
-  background-color: #2196F3;
+  background-color: #2196f3;
   padding: 20px;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .App-header h1 {
@@ -42,7 +42,7 @@
 }
 
 .loading {
-  color: #2196F3;
+  color: #2196f3;
   padding: 20px;
   font-weight: bold;
 }

@@ -99,7 +99,7 @@ input:checked + .slider:before {
   position: absolute;
   top: 9.5rem;
   right: 1.5rem;
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
@@ -113,10 +113,9 @@ input:checked + .slider:before {
 }
 
 .edit-labels-button:hover {
-  background: #1976D2;
+  background: #1976d2;
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -178,7 +177,7 @@ input:checked + .slider:before {
 }
 
 .gender-tabs button.active {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
 }
 
@@ -211,7 +210,7 @@ input:checked + .slider:before {
 
 .label-item input:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
 }
 
@@ -244,21 +243,21 @@ input:checked + .slider:before {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
   }
-  
+
   .modal-content {
     width: 95%;
     padding: 1rem;
   }
-  
+
   .label-item {
     grid-template-columns: 1fr;
   }
-  
+
   .reset-button {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
   }
-  
+
   .modal-actions {
     gap: 0.5rem;
   }
