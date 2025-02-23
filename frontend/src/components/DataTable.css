@@ -562,10 +562,12 @@ input:checked + .slider:before {
     top: 1rem;
     right: 1rem;
     padding: 0.4rem 0.6rem;
+    margin-top: 10px;
   }
   
   .gender-switch-container {
     top: 3.5rem;
+    margin-top: 10px;
   }
   
   .gender-label,

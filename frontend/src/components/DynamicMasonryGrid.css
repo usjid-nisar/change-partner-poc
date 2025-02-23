@@ -4,10 +4,10 @@
   justify-content: center;
   text-align: center;
   height: 100%;
-  padding: 10px;
+  /* padding: 10px; */
   box-sizing: border-box;
   font-size: 14px;
-  line-height: 1.4;
+  /* line-height: 1.4; */
   word-wrap: break-word;
 }
 
@@ -36,8 +36,8 @@
 
 .masonry {
   /* background: #ccc; */
-  width: 550px;
-  max-width: 550px;
+  width: 450px;
+  max-width: 450px;
   margin: 0 auto;
   position: relative;
 }
@@ -49,6 +49,9 @@
 .item {
   position: relative;
   /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); */
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .inner {
@@ -57,10 +60,10 @@
   background: white;
   width: 100%;
   height: 100%;
-  display: flex;
+  /* display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 14px; */
 }
 
 /* Puzzle notch overlay styles */
@@ -69,7 +72,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   pointer-events: none;
-  z-index: 50;
+  z-index: 10;
 }
 
 /* Default rotations for each side */
@@ -92,7 +95,7 @@
 /* Fake box styling */
 .fake-box {
   opacity: 0;
-  background: #eee;
+  background: #dddddd;
   pointer-events: none;
 }
 
@@ -109,4 +112,31 @@
 
 .reevaluate-button:hover {
   background-color: #45a049;
+}
+
+.absolute-button-container {
+  position: absolute;
+  left: 0;
+  top: -100px;
+  width: 100%;
+  height: 100%;
+}
+.masked-container {
+  /* Using an external SVG file as the mask */
+  mask: url("Female_Shilloute.svg") no-repeat center / contain;
+  -webkit-mask: url("Female_Shilloute.svg") no-repeat center / contain;
+}
+
+.packery-grid {
+  width: 100%;
+  max-width: 1200px; /* or your desired max width */
+}
+
+.item.is-dragging {
+  z-index: 2;
+  cursor: move;
+}
+
+.item.is-positioning-post-drag {
+  transition: all 400ms ease;
 }
