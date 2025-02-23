@@ -25,7 +25,7 @@ const SvgIcon = ({ processedData, ...props }) => {
 
   return (
     <div className="mindmap-container">
-      <div className="gender-switch-container">
+      <div className="gender-switch-container" style={{ marginTop: "25px" }}>
         <span
           className={`gender-label ${isGender === "female" ? "active" : ""}`}
         >
