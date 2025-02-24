@@ -284,34 +284,3 @@ input:checked + .slider:before {
     @apply px-4 py-2 min-w-[100px] text-xs;
   }
 }
-
-.export-buttons {
-  display: flex;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.export-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4a90e2;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.export-button:hover {
-  background-color: #357abd;
-}
-
-.export-button:active {
-  background-color: #2a5f96;
-}
-
-.export-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
