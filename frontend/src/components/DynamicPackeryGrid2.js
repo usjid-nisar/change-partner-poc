@@ -204,7 +204,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
     await setTimeout(() => {
       // Define overall container dimensions.
       const containerWidth = 520; // Fixed width
-      const TOTAL_AREA = 300000; // Original total area
+      const TOTAL_AREA = 290000; // Original total area
       console.log("TOTAL_AREA", TOTAL_AREA);
       const containerHeight = TOTAL_AREA / containerWidth;
       const containerRect = {
@@ -216,8 +216,13 @@ const DynamicPackeryGrid = ({ data, notches }) => {
 
       // Define obstacles – these areas will be reserved.
       const obstacles = [
-        { x: 473, y: 341, width: 100, height: 1000 },
-        { x: 0, y: 0, width: 100, height: 100 },
+        { x: 450, y: 341, width: 600, height: 1000 },
+        { x: 0, y: 0, width: 135, height: 150 },
+        { x: 0, y: 0, width: 35, height: 1000 },
+        { x: 415, y: 0, width: 200, height: 150 },
+     
+
+
         // { x: 50, y: 0, width: 90, height: 120 },
         // { x: 0, y: 120, width: 90, height: 120 },
         // { x: 420, y: 0, width: 140, height: 50 },

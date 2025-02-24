@@ -88,6 +88,44 @@ const SvgIcon = ({ processedData, ...props }) => {
     }));
   };
 
+  const handleSave = (format) => {
+    const container = document.querySelector('.overlay-container');
+    if (!container) return;
+
+    // Implementation will depend on your requirements
+    // Here's a basic example using html2canvas
+    import('html2canvas').then(({ default: html2canvas }) => {
+      html2canvas(container).then((canvas) => {
+        const link = document.createElement('a');
+        
+        switch(format) {
+          case 'png':
+            link.download = `mindmap-${isGender}-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            break;
+          case 'jpeg':
+            link.download = `mindmap-${isGender}-${Date.now()}.jpeg`;
+            link.href = canvas.toDataURL('image/jpeg');
+            break;
+          case 'pdf':
+            import('jspdf').then(({ default: jsPDF }) => {
+              const pdf = new jsPDF();
+              const imgData = canvas.toDataURL('image/png');
+              const pdfWidth = pdf.internal.pageSize.getWidth();
+              const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+              pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+              pdf.save(`mindmap-${isGender}-${Date.now()}.pdf`);
+            });
+            return;
+          default:
+            return;
+        }
+        
+        link.click();
+      });
+    });
+  };
+
   return (
     <div className="mindmap-container">
       <div className="gender-switch-container" style={{ marginTop: "25px" }}>
@@ -224,7 +262,7 @@ const SvgIcon = ({ processedData, ...props }) => {
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative capture-container">
         <div
           className={`overlay-container w-[900px] mx-auto ${
             isGender === "female" ? "mt-10" : "-mt-10"
@@ -248,6 +286,27 @@ const SvgIcon = ({ processedData, ...props }) => {
             </>
           )}
         </div>
+      </div>
+
+      <div className="export-buttons">
+        <button 
+          className="export-button"
+          onClick={() => handleSave('png')}
+        >
+          Export as PNG
+        </button>
+        <button 
+          className="export-button"
+          onClick={() => handleSave('jpeg')}
+        >
+          Export as JPEG
+        </button>
+        <button 
+          className="export-button"
+          onClick={() => handleSave('pdf')}
+        >
+          Export as PDF
+        </button>
       </div>
     </div>
   );
