@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import "./svg.css";
 import Female from './female';
+import Male from './male';
 
 const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
@@ -45,13 +46,20 @@ const SvgIcon = ({ processedData, ...props }) => {
       processedData.forEach(piece => {
         // Initialize for both genders
         ['female', 'male'].forEach(gender => {
-          newMappings[gender].dimensions[piece.Dimensions] = piece.Dimensions;
-          newMappings[gender].categories[piece.highLevelCategory] = piece.highLevelCategory;
+          // Store the original dimension name as key and the same as value initially
+          if (piece.Dimensions) {
+            newMappings[gender].dimensions[piece.Dimensions] = piece.Dimensions;
+          }
+          
+          // Store the original category name as key and the same as value initially
+          if (piece.highLevelCategory) {
+            newMappings[gender].categories[piece.highLevelCategory] = piece.highLevelCategory;
+          }
         });
       });
 
       setEditableMappings(newMappings);
-      setOriginalMappings(newMappings);
+      setOriginalMappings(JSON.parse(JSON.stringify(newMappings))); // Deep copy
     }
   }, [processedData]);
 
@@ -126,7 +134,21 @@ const SvgIcon = ({ processedData, ...props }) => {
     
     topDimensions.forEach((dim, index) => {
       const position = 12 - index; // Convert to D12 to D1 format
-      mapping[`D${position}`] = dim.Dimensions;
+      
+      // Use the edited label if available, otherwise use the original
+      const dimensionKey = dim.Dimensions;
+      const categoryKey = dim.highLevelCategory;
+      
+      if (showCategory) {
+        // Use category mapping
+        const displayLabel = editableMappings[isGender].categories[categoryKey] || categoryKey;
+        mapping[`D${position}`] = displayLabel;
+      } else {
+        // Use dimension mapping
+        const displayLabel = editableMappings[isGender].dimensions[dimensionKey] || dimensionKey;
+        mapping[`D${position}`] = displayLabel;
+      }
+      
       // Use Z Score instead of Score, check if it exists
       const zScore = dim["Z Score"];
       mapping[`(d = ${position}.0)`] = typeof zScore === 'number' ? 
@@ -144,6 +166,18 @@ const SvgIcon = ({ processedData, ...props }) => {
     
     return (
       <Female 
+        textMapping={svgMapping}
+        {...props}
+      />
+    );
+  };
+
+  const renderMaleComponent = () => {
+    const topDimensions = getTopDimensions();
+    const svgMapping = createSvgMapping(topDimensions);
+    
+    return (
+      <Male 
         textMapping={svgMapping}
         {...props}
       />
@@ -237,13 +271,27 @@ const SvgIcon = ({ processedData, ...props }) => {
 
               <div className="labels-section">
                 <h3>{showCategory ? 'Categories' : 'Dimensions'}</h3>
+                <div className="type-tabs">
+                  <button 
+                    className={!showCategory ? 'active' : ''}
+                    onClick={() => setShowCategory(false)}
+                  >
+                    Dimensions
+                  </button>
+                  <button 
+                    className={showCategory ? 'active' : ''}
+                    onClick={() => setShowCategory(true)}
+                  >
+                    Categories
+                  </button>
+                </div>
                 <div className="labels-grid">
                   {Object.entries(showCategory ? 
                     editableMappings[isGender].categories : 
                     editableMappings[isGender].dimensions
                   ).map(([original, current]) => (
                     <div key={original} className="label-item">
-                      <span>{original}</span>
+                      <span className="original-label">{original}</span>
                       <input
                         type="text"
                         value={current}
@@ -269,11 +317,7 @@ const SvgIcon = ({ processedData, ...props }) => {
             isGender === "female" ? "mt-10" : "-mt-10"
           }`}
         >
-          {isGender === "female" ? renderFemaleComponent() : (
-            <div>
-              <h1>Male</h1>
-            </div>
-          )}
+          {isGender === "female" ? renderFemaleComponent() : renderMaleComponent()}
         </div>
       </div>
 
