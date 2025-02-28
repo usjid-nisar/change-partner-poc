@@ -1,15 +1,11 @@
 import * as React from "react";
 import { useState } from "react";
-import DynamicMasonryGrid from "./DynamicMasonryGrid";
-import DynamicPackeryGrid from "./DynamicPackeryGrid";
-import DynamicPackeryGrid2 from "./DynamicPackeryGrid2";
 import "./svg.css";
 import Female from './female';
 
 const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
   const [showCategory, setShowCategory] = useState(false);
-  const [showNotches, setShowNotches] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editableMappings, setEditableMappings] = useState({
     female: {
@@ -76,19 +72,7 @@ const SvgIcon = ({ processedData, ...props }) => {
     setEditableMappings(originalMappings);
   };
 
-  const transformDataForMasonry = () => {
-    if (!processedData) return [];
-
-    return processedData.map((piece) => ({
-      label: piece.Dimensions,
-      category: piece.highLevelCategory,
-      zscore: Math.abs(piece["Z Score"]),
-      zlabel: showCategory 
-        ? (editableMappings[isGender].categories[piece.highLevelCategory] || piece.highLevelCategory) + `\nZ: ${piece["Z Score"].toFixed(2)}`
-        : (editableMappings[isGender].dimensions[piece.Dimensions] || piece.Dimensions) + `\nZ: ${piece["Z Score"].toFixed(2)}`,
-    }));
-  };
-
+  
   const handleSave = (format) => {
     const container = document.querySelector('.overlay-container');
     if (!container) return;
@@ -127,12 +111,12 @@ const SvgIcon = ({ processedData, ...props }) => {
     });
   };
 
-  // Sort and get top 12 dimensions with their scores
+  // Sort and get top 12 dimensions
   const getTopDimensions = () => {
     if (!processedData) return [];
     
     return processedData
-      .sort((a, b) => b.Score - a.Score) // Sort by Score in descending order
+      .sort((a, b) => Math.abs(b["Z Score"]) - Math.abs(a["Z Score"])) // Sort by absolute Z Score in descending order
       .slice(0, 12); // Get top 12 dimensions
   };
 
@@ -143,7 +127,11 @@ const SvgIcon = ({ processedData, ...props }) => {
     topDimensions.forEach((dim, index) => {
       const position = 12 - index; // Convert to D12 to D1 format
       mapping[`D${position}`] = dim.Dimensions;
-      mapping[`(d = ${position}.0)`] = dim.Score.toFixed(1);
+      // Use Z Score instead of Score, check if it exists
+      const zScore = dim["Z Score"];
+      mapping[`(d = ${position}.0)`] = typeof zScore === 'number' ? 
+        zScore.toFixed(1) : 
+        'N/A';
     });
 
     return mapping;
@@ -155,16 +143,10 @@ const SvgIcon = ({ processedData, ...props }) => {
     const svgMapping = createSvgMapping(topDimensions);
     
     return (
-      <>
-        <DynamicPackeryGrid
-          data={transformDataForMasonry()}
-          notches={showNotches}
-        />
-        <Female 
-          textMapping={svgMapping}
-          {...props}
-        />
-      </>
+      <Female 
+        textMapping={svgMapping}
+        {...props}
+      />
     );
   };
 
@@ -181,7 +163,6 @@ const SvgIcon = ({ processedData, ...props }) => {
             type="checkbox"
             checked={isGender === "male"}
             onChange={() => {
-              setShowNotches(false);
               setIsGender(isGender === "female" ? "male" : "female");
             }}
           />
@@ -209,28 +190,6 @@ const SvgIcon = ({ processedData, ...props }) => {
         </span>
       </div>
 
-      <div className="notches-switch-container">
-        <span
-          className={`notches-label ${!showNotches ? "active" : ""}`}
-          // onClick={() => setShowNotches(false)}
-        >
-          Hide Notches
-        </span>
-        <label className="switch z-50">
-          <input
-            type="checkbox"
-            checked={showNotches}
-            onChange={() => setShowNotches((prev) => !prev)}
-          />
-          <span className="slider round"></span>
-        </label>
-        <span
-          className={`notches-label ${showNotches ? "active" : ""}`}
-          // onClick={() => setShowNotches(true)}
-        >
-          Show Notches
-        </span>
-      </div>
 
       <button
         className="edit-labels-button"

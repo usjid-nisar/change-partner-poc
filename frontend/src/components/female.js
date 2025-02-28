@@ -23,10 +23,10 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           <path d="m633.92 865.39c-27.49-52.28-40.41-108.17-32.58-172.28l23.44-0.31c58.29-14.61 44.8-3.65 86.32-50.58 1.86 10.43-4.06 20.88 5.55 31.31-0.12-34.54 14.55-30.71 30.78-58.9-2 16.84-4.1 16.63 2.21 33.12 16.65-28.75 40.11-30.79 72.32-44.91 62.63-45.42 65.33-62.65 58.51-134.39 11.71 16.51 22.8 21.87 33.43 18.39-53.72-15.52-44.3-140.18-56.67-186.55-5.54-20.76-28.16-38.6-66.96-88.19l-34.78-44.45c-11.77-15.04-17.11-28.63-32.7-39.57-29.02-20.42-66.5-34.68-103.45-48.06-71.37-25.84-66.42-26.4-143.49-24.54-79.72-12.53-64.57-11.19-129.59 11.35-18.56 6.43-40.94 10.06-61.56 13.71-17.75 3.13-23.3 17.02-31.52 32.6-9.16 17.33 14.55 45.32 23 61.66-33.85 46.7-56.03 76.13-81.51 121.39-16.54 29.36-12.02 75.67-14.66 79.46-17.3 24.88-48.55 39.49-72.96 57.81-9.77 5.85-19.94 11.93-18.99 25.16 0.85 11.96 19.88 23.83 29.24 30.07 5.05 19.85 0.22 27.66-15.12 41.53-5.11 16.85 4.99 23.35 19.51 38.14-17.77 17.19-17.38 14.04-15.36 39.26l12.37 3.47c12.51 3.5 3.44 18.73-0.29 25.16-25.26 64.69 55.39 55.19 93.1 49.44 29.65-4.54 57.31 1.09 74.08 13.04 31.91 22.8 40.77 68.59 64.61 111.08 18.22 68.32 29.21 97.44 31.6 163 0.56 15.37 0.04 16.28-5.11 30.72-21.94 21.27-22.78 40.77-29.07 68.63-4.23 18.69-15.71 44.78-19.75 64.2-17.5 46.78-32.82 83.96-49.69 120.64h526.15c-22.12-105.72-57.89-224.18-111.57-295.59-23.82-31.67-44.54-68.85-58.8-96.02z" />
         </clipPath>
         <text width={79} height={27} id="img1">
-          {"\n\t\t\t"}{getMappedText("D12")}{"\n\t\t"}
+          {getMappedText("D12")}
         </text>
         <text width={135} height={25} id="img2">
-          {"\n\t\t\t"}{getMappedText("(d = 12.0)")}{"\n\t\t"}
+          (d =  {getMappedText("(d = 12.0)")})
         </text>
         <text width={109} height={31} id="img3">
           {getMappedText("D11")}
@@ -35,22 +35,22 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D10")}
         </text>
         <text width={125} height={23} id="img5">
-          {getMappedText("(d = 10.0)")}
+        (d = {getMappedText("(d = 10.0)")})
         </text>
         <text width={130} height={24} id="img6">
-          {getMappedText("(d = 11.0)")}
+        (d = {getMappedText("(d = 11.0)")})
         </text>
         <text width={101} height={29} id="img7">
           {getMappedText("D9")}
         </text>
         <text width={104} height={23} id="img8">
-          {getMappedText("(d = 9.0)")}
+        (d = {getMappedText("(d = 9.0)")})
         </text>
         <text width={101} height={22} id="img9">
-          {getMappedText("(d = 8.0)")}
+        (d = {getMappedText("(d = 8.0)")})
         </text>
         <text width={96} height={20} id="img10">
-          {getMappedText("(d = 7.0)")}
+        (d = {getMappedText("(d = 7.0)")}
         </text>
         <text width={58} height={19} id="img11">
           {getMappedText("D7")}
@@ -59,22 +59,22 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D6")}
         </text>
         <text width={92} height={19} id="img13">
-          {getMappedText("(d = 6.0)")}
+        (d = {getMappedText("(d = 6.0)")})
         </text>
         <text width={87} height={19} id="img14">
-          {getMappedText("(d = 5.0)")}
+        (d = {getMappedText("(d = 5.0)")})
         </text>
         <text width={83} height={18} id="img15">
-          {getMappedText("(d = 4.0)")}
+        (d = {getMappedText("(d = 4.0)")})
         </text>
         <text width={79} height={17} id="img16">
-          {getMappedText("(d = 3.0)")}
+        (d = {getMappedText("(d = 3.0)")}
         </text>
         <text width={74} height={16} id="img17">
-          {getMappedText("(d = 2.0)")}
+        (d ={getMappedText("(d = 2.0)")}
         </text>
         <text width={70} height={16} id="img18">
-          {getMappedText("(d = 1.0)")}
+          (d = {getMappedText("(d = 1.0)")})
         </text>
         <text width={40} height={22} id="img19">
           {getMappedText("D5")}
