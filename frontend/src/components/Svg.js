@@ -4,6 +4,7 @@ import DynamicMasonryGrid from "./DynamicMasonryGrid";
 import DynamicPackeryGrid from "./DynamicPackeryGrid";
 import DynamicPackeryGrid2 from "./DynamicPackeryGrid2";
 import "./svg.css";
+import Female from './female';
 
 const SvgIcon = ({ processedData, ...props }) => {
   const [isGender, setIsGender] = useState("female");
@@ -124,6 +125,47 @@ const SvgIcon = ({ processedData, ...props }) => {
         link.click();
       });
     });
+  };
+
+  // Sort and get top 12 dimensions with their scores
+  const getTopDimensions = () => {
+    if (!processedData) return [];
+    
+    return processedData
+      .sort((a, b) => b.Score - a.Score) // Sort by Score in descending order
+      .slice(0, 12); // Get top 12 dimensions
+  };
+
+  // Create mapping object for SVG labels
+  const createSvgMapping = (topDimensions) => {
+    const mapping = {};
+    
+    topDimensions.forEach((dim, index) => {
+      const position = 12 - index; // Convert to D12 to D1 format
+      mapping[`D${position}`] = dim.Dimensions;
+      mapping[`(d = ${position}.0)`] = dim.Score.toFixed(1);
+    });
+
+    return mapping;
+  };
+
+  // Render the female SVG with mapped data
+  const renderFemaleComponent = () => {
+    const topDimensions = getTopDimensions();
+    const svgMapping = createSvgMapping(topDimensions);
+    
+    return (
+      <>
+        <DynamicPackeryGrid
+          data={transformDataForMasonry()}
+          notches={showNotches}
+        />
+        <Female 
+          textMapping={svgMapping}
+          {...props}
+        />
+      </>
+    );
   };
 
   return (
@@ -268,22 +310,10 @@ const SvgIcon = ({ processedData, ...props }) => {
             isGender === "female" ? "mt-10" : "-mt-10"
           }`}
         >
-          {isGender === "female" ? (
-            <>
-              <DynamicPackeryGrid
-                data={transformDataForMasonry()}
-                notches={showNotches}
-              />
-              <img src="1.svg" alt="overlay" className="overlay-svg" />
-            </>
-          ) : (
-            <>
-              <DynamicPackeryGrid2
-                data={transformDataForMasonry()}
-                notches={showNotches}
-              />
-              <img src="2.svg" alt="overlay" className="overlay-svg -mt-15" />
-            </>
+          {isGender === "female" ? renderFemaleComponent() : (
+            <div>
+              <h1>Male</h1>
+            </div>
           )}
         </div>
       </div>

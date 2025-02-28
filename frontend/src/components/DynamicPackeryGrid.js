@@ -443,7 +443,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
               notchY = centerCoord - containerRect.top - notchW / 2;
             } else if (edge.side === "right") {
               notchX =
-                rect.right - containerRect.left - notchH / 2 + scaleFactor * 8;
+                rect.right - containerRect.left - notchH / 2 + scaleFactor * 6.5;
               notchY = centerCoord - containerRect.top - notchW / 2;
             }
             const duplicate = addedNotches.some((n) => {
@@ -539,6 +539,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
                   top: box.y + "px",
                   width: box.width + "px",
                   height: box.height + "px",
+                  border: "1px solid black",
                 }}
               >
                 {!box.isFake && (
@@ -546,7 +547,7 @@ const DynamicPackeryGrid = ({ data, notches }) => {
                     className="inner hover:shadow-lg cursor-pointer transition-all duration-300 bg-gray"
                     style={{ whiteSpace: "pre-line" }}
                   >
-                    <p className="z-30">
+                    <p className="z-100 font-bold">
                       {/* have font size according to the box size, bigger box, bigger font , if smaller then 50, do not show the lable, show tool tip on hover.*/}
                       {box.width < 50 && box.height < 50 ? (
                         <span className={`text-[${box.width / 8}px] `}>
