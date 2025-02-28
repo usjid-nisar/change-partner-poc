@@ -253,8 +253,8 @@ const SvgIcon = ({ processedData, ...props }) => {
               </div>
             </div>
             
-            <div className="modal-body">
-              <div className="gender-tabs">
+          <div className="modal-body">
+               {/*  <div className="gender-tabs">
                 <button 
                   className={isGender === 'female' ? 'active' : ''}
                   onClick={() => setIsGender('female')}
@@ -267,7 +267,7 @@ const SvgIcon = ({ processedData, ...props }) => {
                 >
                   Male
                 </button>
-              </div>
+              </div> */}
 
               <div className="labels-section">
                 <h3>{showCategory ? 'Categories' : 'Dimensions'}</h3>
