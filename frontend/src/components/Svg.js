@@ -271,7 +271,7 @@ const SvgIcon = ({ processedData, ...props }) => {
 
               <div className="labels-section">
                 <h3>{showCategory ? 'Categories' : 'Dimensions'}</h3>
-                <div className="type-tabs">
+                {/* <div className="type-tabs">
                   <button 
                     className={!showCategory ? 'active' : ''}
                     onClick={() => setShowCategory(false)}
@@ -284,7 +284,7 @@ const SvgIcon = ({ processedData, ...props }) => {
                   >
                     Categories
                   </button>
-                </div>
+                </div> */}
                 <div className="labels-grid">
                   {Object.entries(showCategory ? 
                     editableMappings[isGender].categories : 
