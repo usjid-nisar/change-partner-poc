@@ -5,6 +5,19 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
   const getMappedText = (id) => {
     return textMapping[id] || id;
   };
+  const getFontSize = (text, maxWidth, maxHeight) => {
+    console.log(text.length, maxWidth, maxHeight);
+    const baseSize = 35; // Default font size
+    const lengthFactor = Math.max(text.length / 5, 1);
+    console.log("lengthFactor", lengthFactor);
+    const scaledSize = Math.min(
+      maxWidth / lengthFactor,
+      maxHeight / 1.5,
+      baseSize
+    ); // Ensure it fits
+    console.log(scaledSize);
+    return scaledSize;
+  };
 
   return (
     <svg
@@ -22,76 +35,154 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
         <clipPath clipPathUnits="userSpaceOnUse" id="cp2">
           <path d="m633.92 865.39c-27.49-52.28-40.41-108.17-32.58-172.28l23.44-0.31c58.29-14.61 44.8-3.65 86.32-50.58 1.86 10.43-4.06 20.88 5.55 31.31-0.12-34.54 14.55-30.71 30.78-58.9-2 16.84-4.1 16.63 2.21 33.12 16.65-28.75 40.11-30.79 72.32-44.91 62.63-45.42 65.33-62.65 58.51-134.39 11.71 16.51 22.8 21.87 33.43 18.39-53.72-15.52-44.3-140.18-56.67-186.55-5.54-20.76-28.16-38.6-66.96-88.19l-34.78-44.45c-11.77-15.04-17.11-28.63-32.7-39.57-29.02-20.42-66.5-34.68-103.45-48.06-71.37-25.84-66.42-26.4-143.49-24.54-79.72-12.53-64.57-11.19-129.59 11.35-18.56 6.43-40.94 10.06-61.56 13.71-17.75 3.13-23.3 17.02-31.52 32.6-9.16 17.33 14.55 45.32 23 61.66-33.85 46.7-56.03 76.13-81.51 121.39-16.54 29.36-12.02 75.67-14.66 79.46-17.3 24.88-48.55 39.49-72.96 57.81-9.77 5.85-19.94 11.93-18.99 25.16 0.85 11.96 19.88 23.83 29.24 30.07 5.05 19.85 0.22 27.66-15.12 41.53-5.11 16.85 4.99 23.35 19.51 38.14-17.77 17.19-17.38 14.04-15.36 39.26l12.37 3.47c12.51 3.5 3.44 18.73-0.29 25.16-25.26 64.69 55.39 55.19 93.1 49.44 29.65-4.54 57.31 1.09 74.08 13.04 31.91 22.8 40.77 68.59 64.61 111.08 18.22 68.32 29.21 97.44 31.6 163 0.56 15.37 0.04 16.28-5.11 30.72-21.94 21.27-22.78 40.77-29.07 68.63-4.23 18.69-15.71 44.78-19.75 64.2-17.5 46.78-32.82 83.96-49.69 120.64h526.15c-22.12-105.72-57.89-224.18-111.57-295.59-23.82-31.67-44.54-68.85-58.8-96.02z" />
         </clipPath>
-        <text width={79} height={27} id="img1">
+        <text
+          id="img1"
+          fontWeight="bold"
+          fontSize={getFontSize(getMappedText("D12"), 79, 100)}
+          textAnchor="middle"
+        >
           {getMappedText("D12")}
         </text>
-        <text width={135} height={25} id="img2">
-          (d =  {getMappedText("(d = 12.0)")})
+        <text id="img2" fontSize={18} textAnchor="middle">
+          (d = {getMappedText("(d = 12.0)")})
         </text>
-        <text width={109} height={31} id="img3">
+        <text
+          id="img3"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D11"), 65, 100)}
+        >
           {getMappedText("D11")}
         </text>
-        <text width={80} height={24} id="img4">
+        <text
+          id="img4"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D10"), 65, 40)}
+        >
           {getMappedText("D10")}
         </text>
-        <text width={125} height={23} id="img5">
-        (d = {getMappedText("(d = 10.0)")})
+        <text width={125} height={23} id="img5" textAnchor="middle">
+          (d = {getMappedText("(d = 10.0)")})
         </text>
-        <text width={130} height={24} id="img6">
-        (d = {getMappedText("(d = 11.0)")})
+        <text width={130} height={24} id="img6" textAnchor="middle">
+          (d = {getMappedText("(d = 11.0)")})
         </text>
-        <text width={101} height={29} id="img7">
+        <text
+          width={101}
+          height={29}
+          id="img7"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D9"), 80, 40)}
+        >
           {getMappedText("D9")}
         </text>
-        <text width={104} height={23} id="img8">
-        (d = {getMappedText("(d = 9.0)")})
+        <text width={104} height={23} id="img8" textAnchor="middle">
+          (d = {getMappedText("(d = 9.0)")})
         </text>
-        <text width={101} height={22} id="img9">
-        (d = {getMappedText("(d = 8.0)")})
+        <text width={101} height={22} id="img9" textAnchor="middle">
+          (d = {getMappedText("(d = 8.0)")})
         </text>
-        <text width={96} height={20} id="img10">
-        (d = {getMappedText("(d = 7.0)")}
+        <text width={96} height={20} id="img10" textAnchor="middle">
+          (d = {getMappedText("(d = 7.0)")})
         </text>
-        <text width={58} height={19} id="img11">
+        <text
+          width={58}
+          height={19}
+          id="img11"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D7"), 40, 40)}
+        >
           {getMappedText("D7")}
         </text>
-        <text width={63} height={22} id="img12">
+        <text
+          width={63}
+          height={22}
+          id="img12"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D6"), 55, 40)}
+        >
           {getMappedText("D6")}
         </text>
-        <text width={92} height={19} id="img13">
-        (d = {getMappedText("(d = 6.0)")})
+        <text width={92} height={19} id="img13" textAnchor="middle">
+          (d = {getMappedText("(d = 6.0)")})
         </text>
-        <text width={87} height={19} id="img14">
-        (d = {getMappedText("(d = 5.0)")})
+        <text width={87} height={19} id="img14" textAnchor="middle">
+          (d = {getMappedText("(d = 5.0)")})
         </text>
-        <text width={83} height={18} id="img15">
-        (d = {getMappedText("(d = 4.0)")})
+        <text width={83} height={18} id="img15" textAnchor="middle">
+          (d = {getMappedText("(d = 4.0)")})
         </text>
-        <text width={79} height={17} id="img16">
-        (d = {getMappedText("(d = 3.0)")}
+        <text width={79} height={16} id="img16" textAnchor="middle">
+          (d = {getMappedText("(d = 3.0)")})
         </text>
-        <text width={74} height={16} id="img17">
-        (d ={getMappedText("(d = 2.0)")}
+        <text width={74} height={16} id="img17" textAnchor="middle">
+          (d ={getMappedText("(d = 2.0)")})
         </text>
-        <text width={70} height={16} id="img18">
+        <text width={70} height={16} id="img18" textAnchor="middle">
           (d = {getMappedText("(d = 1.0)")})
         </text>
-        <text width={40} height={22} id="img19">
+        <text
+          width={40}
+          height={22}
+          id="img19"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D5"), 45, 40)}
+        >
           {getMappedText("D5")}
         </text>
-        <text width={58} height={17} id="img20">
+        <text
+          width={58}
+          height={17}
+          id="img20"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D4"), 50, 30)}
+        >
           {getMappedText("D4")}
         </text>
-        <text width={57} height={16} id="img21">
+        <text
+          width={57}
+          height={16}
+          id="img21"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D3"), 40, 30)}
+        >
           {getMappedText("D3")}
         </text>
-        <text width={47} height={15} id="img22">
+        <text
+          width={47}
+          height={15}
+          id="img22"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D2"), 40, 30)}
+        >
           {getMappedText("D2")}
         </text>
-        <text width={65} height={14} id="img23">
+        <text
+          width={65}
+          height={14}
+          id="img23"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D1"), 45, 40)}
+        >
           {getMappedText("D1")}
         </text>
-        <text width={111} height={26} id="img24">
+        <text
+          width={111}
+          height={26}
+          id="img24"
+          fontWeight="bold"
+          textAnchor="middle"
+          fontSize={getFontSize(getMappedText("D8"), 60, 30)}
+        >
           {getMappedText("D8")}
         </text>
       </defs>
@@ -100,6 +191,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           "\n\t\t.s0 {\n\t\t\tfill: #3a256e\n\t\t}\n\n\t\t.s1 {\n\t\t\tfill: none;\n\t\t\tstroke: #231f20;\n\t\t\tstroke-miterlimit: 10\n\t\t}\n\n\t\t.s2 {\n\t\t\tfill: #ffffff;\n\t\t\tstroke: #231f20;\n\t\t\tstroke-miterlimit: 10\n\t\t}\n\n\t\t.s3 {\n\t\t\tfill: none;\n\t\t\tstroke: #231f20;\n\t\t\tstroke-width: 2\n\t\t}\n\n\t\t.s4 {\n\t\t\tfill: #ffffff;\n\t\t\tstroke: #231f20;\n\t\t\tstroke-width: 2\n\t\t}\n\t"
         }
       </style>
+
       <g id="Clip-Path" clipPath="url(#cp1)">
         <path
           fillRule="evenodd"
@@ -249,30 +341,30 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
               d="m503.3 46.4v-1h-1-258.3-1v1 108.4c0 6.9 3 10.9 6.8 13.1 3.7 2.1 8.2 2.5 11.2 2.5 5.6 0 9.4-2.9 13.5-6q1-0.8 2.1-1.6c5-3.7 11.1-7.3 22.1-7.3 18.4 0 33.3 14.6 34 32.8-0.7 18.3-15.6 32.8-34 32.8-11 0-17.1-3.6-22.1-7.2q-1.1-0.8-2.1-1.6c-4.1-3.1-7.9-6.1-13.5-6.1-3 0-7.4 0.4-11.2 2.6-3.8 2.2-6.8 6.2-6.8 13.1v99.3 1h1 89.4c6 0 9.4 3.6 11.3 7.4 1.9 3.9 2.3 7.9 2.3 8.5q0 0 0 0.1 0 0.1-0.1 0.2-0.1 0.3-0.4 0.8-0.6 0.9-1.6 2.4-0.2 0.2-0.4 0.5c-1.3 1.8-3.1 4.2-4.8 7.1-3.8 6.4-7.6 15.2-7.6 26.7 0 19.9 16.1 36.1 36.1 36.1 19.9 0 36-16.2 36-36.1 0-11.5-3.8-18.1-7.6-23.3q-0.9-1.2-1.7-2.3c-3.1-4-5.6-7.3-5.6-12.2 0-2.8 0.4-6.8 2.3-10.1 1.9-3.2 5.2-5.8 11.4-5.8h99.3 1v-1-99.3c0-6.9-3-10.9-6.8-13.1-3.7-2.2-8.2-2.6-11.1-2.6-5.6 0-9.5 3-13.5 6.1q-1.1 0.8-2.2 1.6c-4.9 3.6-11.1 7.2-22.1 7.2-18.3 0-33.3-14.5-34-32.8 0.7-18.2 15.7-32.8 34-32.8 11 0 17.2 3.6 22.1 7.3q1.1 0.8 2.2 1.6c4 3.1 7.9 6 13.5 6 2.9 0 7.4-0.3 11.1-2.5 3.8-2.2 6.8-6.2 6.8-13.1z"
             />
           </g>
-          <use id="D12" href="#img1" x={343} y={92} />
-          <use id="(d = 12.0)" href="#img2" x={313} y={128} />
-          <use id="D11" href="#img3" x={561} y={179} />
-          <use id="D10" href="#img4" x={573} y={352} />
-          <use id="(d = 10.0)" href="#img5" x={554} y={465} />
-          <use id="(d = 11.0)" href="#img6" x={548} y={215} />
-          <use id="D9" href="#img7" x={365} y={421} />
-          <use id="(d = 9.0)" href="#img8" x={362} y={453} />
-          <use id="(d = 8.0)" href="#img9" x={389} y={578} />
-          <use id="(d = 7.0)" href="#img10" x={186} y={448} />
-          <use id="D7" href="#img11" x={213} y={339} />
-          <use id="D6" href="#img12" x={756} y={400} />
-          <use id="(d = 6.0)" href="#img13" x={743} y={424} />
-          <use id="(d = 5.0)" href="#img14" x={575} y={609} />
-          <use id="(d = 4.0)" href="#img15" x={731} y={544} />
-          <use id="(d = 3.0)" href="#img16" x={247} y={596} />
-          <use id="(d = 2.0)" href="#img17" x={156} y={544} />
-          <use id="(d = 1.0)" href="#img18" x={402} y={688} />
-          <use id="D5" href="#img19" x={599} y={583} />
-          <use id="D4" href="#img20" x={743} y={518} />
-          <use id="D3" href="#img21" x={276} y={513} />
-          <use id="D2" href="#img22" x={169} y={526} />
-          <use id="D1" href="#img23" x={405} y={670} />
-          <use id="D8" href="#img24" x={386} y={548} />
+          <use id="D12" href="#img1" x={380} y={120} />
+          <use id="(d = 12.0)" href="#img2" x={380} y={148} />
+          <use id="D11" href="#img3" x={610} y={200} />
+          <use id="(d = 11.0)" href="#img6" x={610} y={230} />
+          <use id="D10" href="#img4" x={610} y={380} />
+          <use id="(d = 10.0)" href="#img5" x={610} y={465} />
+          <use id="D9" href="#img7" x={425} y={431} />
+          <use id="(d = 9.0)" href="#img8" x={425} y={463} />
+          <use id="D8" href="#img24" x={439} y={568} />
+          <use id="(d = 8.0)" href="#img9" x={439} y={592} />
+          <use id="D7" href="#img11" x={240} y={360} />
+          <use id="(d = 7.0)" href="#img10" x={240} y={448} />
+          <use id="D6" href="#img12" x={780} y={420} />
+          <use id="(d = 6.0)" href="#img13" x={780} y={440} />
+          <use id="D5" href="#img19" x={625} y={609} />
+          <use id="(d = 5.0)" href="#img14" x={625} y={629} />
+          <use id="D4" href="#img20" x={770} y={518} />
+          <use id="(d = 4.0)" href="#img15" x={770} y={544} />
+          <use id="D3" href="#img21" x={300} y={520} />
+          <use id="(d = 3.0)" href="#img16" x={300} y={610} />
+          <use id="D2" href="#img22" x={195} y={541} />
+          <use id="(d = 2.0)" href="#img17" x={195} y={558} />
+          <use id="D1" href="#img23" x={439} y={680} />
+          <use id="(d = 1.0)" href="#img18" x={439} y={698} />
         </g>
       </g>
     </svg>
