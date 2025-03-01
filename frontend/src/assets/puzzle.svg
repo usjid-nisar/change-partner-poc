@@ -1,7 +1,7 @@
 <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="-9.8 -10.2 250 290" width="250" height="290">
   <title>Language Model Conceptual</title>
   <style>
-    .s0 { fill: white; stroke: #050505;stroke-miterlimit:10;stroke-width: 5px;}
+    .s0 { fill: white; stroke: #050505;stroke-miterlimit:10;stroke-width: 10px;}
   </style>
   <g id="Layer 1">
     <path id="&lt;Path&gt;" fill="white" stroke="#050505" stroke-miterlimit="10" stroke-width="5px" d="m1 288.3c42.1 0 47.1-35.6 47.1-54.3 0-39.6-47.9-49-47.9-121.4 0-62.3 50.5-112.8 112.8-112.8 62.3 0 112.8 50.5 112.8 112.8 0 72.4-47.9 81.8-47.9 121.4 0 18.7 5 54.3 47.1 54.3"/>
