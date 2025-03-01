@@ -131,7 +131,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           id="img19"
           fontWeight="bold"
           textAnchor="middle"
-          fontSize={getFontSize(getMappedText("D5"), 45, 40)}
+          fontSize={getFontSize(getMappedText("D5"), 35, 30)}
         >
           {getMappedText("D5")}
         </text>
@@ -151,7 +151,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           id="img21"
           fontWeight="bold"
           textAnchor="middle"
-          fontSize={getFontSize(getMappedText("D3"), 40, 30)}
+          fontSize={getFontSize(getMappedText("D3"), 35, 25)}
         >
           {getMappedText("D3")}
         </text>
@@ -161,7 +161,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           id="img22"
           fontWeight="bold"
           textAnchor="middle"
-          fontSize={getFontSize(getMappedText("D2"), 40, 30)}
+          fontSize={getFontSize(getMappedText("D2"), 30, 20)}
         >
           {getMappedText("D2")}
         </text>
@@ -171,7 +171,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           id="img23"
           fontWeight="bold"
           textAnchor="middle"
-          fontSize={getFontSize(getMappedText("D1"), 45, 40)}
+          fontSize={getFontSize(getMappedText("D1"), 35, 25)}
         >
           {getMappedText("D1")}
         </text>
