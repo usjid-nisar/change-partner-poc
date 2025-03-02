@@ -22,7 +22,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
       version="1.2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 800 900"
-      width="800"
+      width="845"
       height="900"
       {...props}
     >
