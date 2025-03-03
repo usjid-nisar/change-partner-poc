@@ -2,7 +2,7 @@ import * as React from "react";
 const SVGComponent = ({ textMapping = {}, ...props }) => {
   // Add getMappedText helper function
   const getMappedText = (originalText) => {
-    return textMapping[originalText] || originalText;
+    return textMapping[originalText] || "";
   };
   const getFontSize = (text, maxWidth, maxHeight) => {
     console.log(text.length, maxWidth, maxHeight);

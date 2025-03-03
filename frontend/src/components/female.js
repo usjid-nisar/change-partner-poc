@@ -2,9 +2,17 @@ import * as React from "react";
 
 const SVGComponent = ({ textMapping = {}, ...props }) => {
   // Helper function to get mapped text or original text
-  const getMappedText = (id) => {
-    return textMapping[id] || id;
+  const getMappedText = (key) => {
+    return textMapping[key] || "";
   };
+
+  // Add a new helper function to handle score display
+  const getScoreText = (key) => {
+    const value = textMapping[key];
+    // Only show "(d = X.X)" if there's an actual value
+    return value ? `(d = ${value})` : "";
+  };
+
   const getFontSize = (text, maxWidth, maxHeight) => {
     console.log(text.length, maxWidth, maxHeight);
     const baseSize = 35; // Default font size
@@ -44,7 +52,7 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D12")}
         </text>
         <text id="img2" fontSize={18} textAnchor="middle">
-          (d = {getMappedText("(d = 12.0)")})
+          {getScoreText("(d = 12.0)")}
         </text>
         <text
           id="img3"
@@ -63,10 +71,10 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D10")}
         </text>
         <text width={125} height={23} id="img5" textAnchor="middle">
-          (d = {getMappedText("(d = 10.0)")})
+          {getScoreText("(d = 10.0)")}
         </text>
         <text width={130} height={24} id="img6" textAnchor="middle">
-          (d = {getMappedText("(d = 11.0)")})
+          {getScoreText("(d = 11.0)")}
         </text>
         <text
           width={101}
@@ -79,13 +87,13 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D9")}
         </text>
         <text width={104} height={23} id="img8" textAnchor="middle">
-          (d = {getMappedText("(d = 9.0)")})
+          {getScoreText("(d = 9.0)")}
         </text>
         <text width={101} height={22} id="img9" textAnchor="middle">
-          (d = {getMappedText("(d = 8.0)")})
+          {getScoreText("(d = 8.0)")}
         </text>
         <text width={96} height={20} id="img10" textAnchor="middle">
-          (d = {getMappedText("(d = 7.0)")})
+          {getScoreText("(d = 7.0)")}
         </text>
         <text
           width={58}
@@ -108,22 +116,22 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D6")}
         </text>
         <text width={92} height={19} id="img13" textAnchor="middle">
-          (d = {getMappedText("(d = 6.0)")})
+          {getScoreText("(d = 6.0)")}
         </text>
         <text width={87} height={19} id="img14" textAnchor="middle">
-          (d = {getMappedText("(d = 5.0)")})
+          {getScoreText("(d = 5.0)")}
         </text>
         <text width={83} height={18} id="img15" textAnchor="middle">
-          (d = {getMappedText("(d = 4.0)")})
+          {getScoreText("(d = 4.0)")}
         </text>
         <text width={79} height={16} id="img16" textAnchor="middle">
-          (d = {getMappedText("(d = 3.0)")})
+          {getScoreText("(d = 3.0)")}
         </text>
         <text width={74} height={16} id="img17" textAnchor="middle">
-          (d ={getMappedText("(d = 2.0)")})
+          {getScoreText("(d = 2.0)")}
         </text>
         <text width={70} height={16} id="img18" textAnchor="middle">
-          (d = {getMappedText("(d = 1.0)")})
+          {getScoreText("(d = 1.0)")}
         </text>
         <text
           width={40}

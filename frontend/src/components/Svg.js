@@ -119,21 +119,33 @@ const SvgIcon = ({ processedData, ...props }) => {
     });
   };
 
-  // Sort and get top 12 dimensions
+  // Sort and get top dimensions (up to 12)
   const getTopDimensions = () => {
-    if (!processedData) return [];
+    if (!processedData || !Array.isArray(processedData) || processedData.length === 0) return [];
 
     return processedData
       .sort((a, b) => Math.abs(b["Z Score"]) - Math.abs(a["Z Score"])) // Sort by absolute Z Score in descending order
-      .slice(0, 12); // Get top 12 dimensions
+      .slice(0, 12); // Get top dimensions (up to 12)
   };
 
   // Create mapping object for SVG labels
   const createSvgMapping = (topDimensions) => {
     const mapping = {};
 
+    // Initialize all positions with empty strings
+    for (let i = 1; i <= 12; i++) {
+      mapping[`D${i}`] = "";
+      mapping[`(d = ${i}.0)`] = "";
+    }
+
+    // Fill in available dimensions
     topDimensions.forEach((dim, index) => {
-      const position = 12 - index; // Convert to D12 to D1 format
+      // Start filling from the highest position (D12) downward
+      // This ensures the highest value goes to D12, next to D11, etc.
+      const position = 12 - index;
+      
+      // Skip if we've gone below D1
+      if (position < 1) return;
 
       // Use the edited label if available, otherwise use the original
       const dimensionKey = dim.Dimensions;
