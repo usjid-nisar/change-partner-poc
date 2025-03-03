@@ -1,9 +1,14 @@
 import * as React from "react";
 const SVGComponent = ({ textMapping = {}, ...props }) => {
   // Add getMappedText helper function
-  const getMappedText = (originalText) => {
-    return textMapping[originalText] || "";
+  const getMappedText = (key) => {
+    return textMapping[key] || "";
   };
+  const getScoreText = (key) => {
+    const value = textMapping[key];
+    return value
+  };
+
   const getFontSize = (text, maxWidth, maxHeight) => {
     console.log(text.length, maxWidth, maxHeight);
     const baseSize = 42; // Default font size
@@ -57,23 +62,23 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D12")}
         </text>
         <text width={119} height={23} id="img5" textAnchor="middle">
-          (d = {getMappedText("(d = 12.0)")})
-        </text>
-        <text width={120} height={23} id="img6" textAnchor="middle">
-          (d = {getMappedText("(d = 11.0)")})
-        </text>
-        <text width={119} height={23} id="img7" textAnchor="middle">
-          (d = {getMappedText("(d = 10.0)")})
-        </text>
-        <text width={104} height={23} id="img8" textAnchor="middle">
-          (d = {getMappedText("(d = 9.0)")})
-        </text>
-        <text width={104} height={23} id="img9" textAnchor="middle">
-          (d = {getMappedText("(d = 8.0)")})
-        </text>
-        <text width={104} height={23} id="img10" textAnchor="middle">
-          (d = {getMappedText("(d = 6.0)")})
-        </text>
+    {getScoreText("(d = 12.0)") ? `(d = ${getScoreText("(d = 12.0)")})` : ""}
+  </text>
+  <text width={120} height={23} id="img6" textAnchor="middle">
+    {getScoreText("(d = 11.0)") ? `(d = ${getScoreText("(d = 11.0)")})` : ""}
+  </text>
+  <text width={119} height={23} id="img7" textAnchor="middle">
+    {getScoreText("(d = 10.0)") ? `(d = ${getScoreText("(d = 10.0)")})` : ""}
+  </text>
+  <text width={104} height={23} id="img8" textAnchor="middle">
+    {getScoreText("(d = 9.0)") ? `(d = ${getScoreText("(d = 9.0)")})` : ""}
+  </text>
+  <text width={104} height={23} id="img9" textAnchor="middle">
+    {getScoreText("(d = 8.0)") ? `(d = ${getScoreText("(d = 8.0)")})` : ""}
+  </text>
+  <text width={104} height={23} id="img10" textAnchor="middle">
+    {getScoreText("(d = 6.0)") ? `(d = ${getScoreText("(d = 6.0)")})` : ""}
+  </text>
         <text
           width={45}
           height={18}
@@ -135,23 +140,23 @@ const SVGComponent = ({ textMapping = {}, ...props }) => {
           {getMappedText("D7")}
         </text>
         <text width={104} height={23} id="img17" textAnchor="middle">
-          (d = {getMappedText("(d = 7.0)")})
-        </text>
-        <text width={105} height={23} id="img18" textAnchor="middle">
-          (d = {getMappedText("(d = 5.0)")})
-        </text>
-        <text width={104} height={23} id="img19" textAnchor="middle">
-          (d = {getMappedText("(d = 2.0)")})
-        </text>
-        <text width={104} height={23} id="img20" textAnchor="middle">
-          (d = {getMappedText("(d = 4.0)")})
-        </text>
-        <text width={105} height={23} id="img21" textAnchor="middle">
-          (d = {getMappedText("(d = 3.0)")})
-        </text>
-        <text width={97} height={23} id="img22" textAnchor="middle">
-          (d = {getMappedText("(d = 1.0)")})
-        </text>
+    {getScoreText("(d = 7.0)") ? `(d = ${getScoreText("(d = 7.0)")})` : ""}
+  </text>
+  <text width={105} height={23} id="img18" textAnchor="middle">
+    {getScoreText("(d = 5.0)") ? `(d = ${getScoreText("(d = 5.0)")})` : ""}
+  </text>
+  <text width={104} height={23} id="img19" textAnchor="middle">
+    {getScoreText("(d = 2.0)") ? `(d = ${getScoreText("(d = 2.0)")})` : ""}
+  </text>
+  <text width={104} height={23} id="img20" textAnchor="middle">
+    {getScoreText("(d = 4.0)") ? `(d = ${getScoreText("(d = 4.0)")})` : ""}
+  </text>
+  <text width={105} height={23} id="img21" textAnchor="middle">
+    {getScoreText("(d = 3.0)") ? `(d = ${getScoreText("(d = 3.0)")})` : ""}
+  </text>
+  <text width={97} height={23} id="img22" textAnchor="middle">
+    {getScoreText("(d = 1.0)") ? `(d = ${getScoreText("(d = 1.0)")})` : ""}
+  </text>
         <text
           width={30}
           height={19}
