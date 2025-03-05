@@ -124,7 +124,7 @@ const SvgIcon = ({ processedData, ...props }) => {
     if (!processedData || !Array.isArray(processedData) || processedData.length === 0) return [];
 
     return processedData
-      .sort((a, b) => Math.abs(b["Z Score"]) - Math.abs(a["Z Score"])) // Sort by absolute Z Score in descending order
+      .sort((a, b) => Math.abs(b["Z-Score"]) - Math.abs(a["Z-Score"])) // Sort by absolute Z-Score in descending order
       .slice(0, 12); // Get top dimensions (up to 12)
   };
 
@@ -163,8 +163,8 @@ const SvgIcon = ({ processedData, ...props }) => {
         mapping[`D${position}`] = displayLabel;
       }
 
-      // Use Z Score instead of Score, check if it exists
-      const zScore = dim["Z Score"];
+      // Use Z-Score instead of Score, check if it exists
+      const zScore = dim["Z-Score"];
       mapping[`(d = ${position}.0)`] =
         typeof zScore === "number" ? zScore.toFixed(1) : "N/A";
     });

@@ -3,10 +3,43 @@ import './DataTable.css';
 import SvgIcon from './Svg';
 
 export const DataTable = ({ processedData, rawData }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [rawCurrentPage, setRawCurrentPage] = useState(1);
+  const [processedCurrentPage, setProcessedCurrentPage] = useState(1);
+  const [rawRowsPerPage, setRawRowsPerPage] = useState(10);
+  const [processedRowsPerPage, setProcessedRowsPerPage] = useState(10);
+  const [rawSearchTerm, setRawSearchTerm] = useState('');
+  const [processedSearchTerm, setProcessedSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('raw'); // 'raw', 'processed', or 'mindmap'
+  
+  // Get current page based on active tab
+  const currentPage = activeTab === 'raw' ? rawCurrentPage : processedCurrentPage;
+  const setCurrentPage = (page) => {
+    if (activeTab === 'raw') {
+      setRawCurrentPage(page);
+    } else {
+      setProcessedCurrentPage(page);
+    }
+  };
+  
+  // Get rows per page based on active tab
+  const rowsPerPage = activeTab === 'raw' ? rawRowsPerPage : processedRowsPerPage;
+  const setRowsPerPage = (rows) => {
+    if (activeTab === 'raw') {
+      setRawRowsPerPage(rows);
+    } else {
+      setProcessedRowsPerPage(rows);
+    }
+  };
+  
+  // Get search term based on active tab
+  const searchTerm = activeTab === 'raw' ? rawSearchTerm : processedSearchTerm;
+  const setSearchTerm = (term) => {
+    if (activeTab === 'raw') {
+      setRawSearchTerm(term);
+    } else {
+      setProcessedSearchTerm(term);
+    }
+  };
   
   // Available options for rows per page
   const rowsPerPageOptions = [10, 25, 50, 100];
@@ -31,12 +64,12 @@ export const DataTable = ({ processedData, rawData }) => {
 
   // Create a map of P Scores and their frequencies
   const pScoreFrequency = filteredData.reduce((acc, row) => {
-    const pScore = row["P Score"];
+    const pScore = row["P-Value"];
     acc[pScore] = (acc[pScore] || 0) + 1;
     return acc;
   }, {});
 
-  // Function to determine Z Score class
+  // Function to determine Z-Score class
   const getZScoreClass = (zScore) => {
     if (zScore > 0) return 'positive-z';
     if (zScore < 0) return 'negative-z';
@@ -159,12 +192,12 @@ export const DataTable = ({ processedData, rawData }) => {
                     <th>High Level Category</th>
                     <th className="sortable-header">
                       <div className="header-content">
-                        P Score
+                        P-Value
                         {activeTab === 'processed' && (
                           <>
                             <span className="sort-arrow">↑</span>
                             <div className="tooltip">
-                              Sorted ascending. Only showing P-Score &lt; 0.05
+                              Sorted ascending. Only showing P-Value &lt; 0.05
                             </div>
                           </>
                         )}
@@ -172,7 +205,7 @@ export const DataTable = ({ processedData, rawData }) => {
                     </th>
                     <th className="sortable-header">
                       <div className="header-content">
-                        Z Score
+                        Z-Score
                         {activeTab === 'processed' && (
                           <>
                             <span className="sort-arrow">↓</span>
@@ -190,18 +223,18 @@ export const DataTable = ({ processedData, rawData }) => {
                     <tr 
                       key={row.index}
                       className={`
-                        ${activeTab === 'processed' && pScoreFrequency[row["P Score"]] > 1 ? 'duplicate-p-score' : ''}
-                        ${activeTab === 'processed' ? getZScoreClass(row["Z Score"]) : ''}
+                        ${activeTab === 'processed' && pScoreFrequency[row["P-Value"]] > 1 ? 'duplicate-p-score' : ''}
+                        ${activeTab === 'processed' ? getZScoreClass(row["Z-Score"]) : ''}
                       `}
                     >
                       <td>{row.index}</td>
                       <td>{row.Dimensions}</td>
                       <td>{row.highLevelCategory}</td>
-                      <td>{typeof row["P Score"] === 'number' ? row["P Score"].toString() : 'N/A'}</td>
+                      <td>{typeof row["P-Value"] === 'number' ? row["P-Value"].toString() : 'N/A'}</td>
                       <td className="z-score-cell">
-                        {typeof row["Z Score"] === 'number' ? (
-                          <span className={activeTab === 'processed' ? getZScoreClass(row["Z Score"]) : ''}>
-                            {row["Z Score"] > 0 ? '+' : ''}{row["Z Score"].toString()}
+                        {typeof row["Z-Score"] === 'number' ? (
+                          <span className={activeTab === 'processed' ? getZScoreClass(row["Z-Score"]) : ''}>
+                            {row["Z-Score"] > 0 ? '+' : ''}{row["Z-Score"].toString()}
                           </span>
                         ) : 'N/A'}
                       </td>

@@ -96,8 +96,8 @@ const getRawData = (data) => {
     .map((row, index) => ({
       index: index + 1,
       Dimensions: row.Dimension || row["Dimension"],
-      "Z Score": Number(row["Z-Score"] || row["Z Score"]),
-      "P Score": Number(row["P-Value"] || row["P Score"]),
+      "Z-Score": Number(row["Z-Score"] || row["Z-Score"]),
+      "P-Value": Number(row["P-Value"] || row["P-Value"]),
     }))
     .sort((a, b) => a.index - b.index); // Sort by index in ascending order
 };
@@ -259,29 +259,29 @@ const processData = (data) => {
   const processedData = data.map((row, index) => ({
     index: index + 1,
     Dimensions: row.Dimension || row["Dimension"],
-    "Z Score": Number(row["Z-Score"] || row["Z Score"]),
-    "P Score": Number(row["P-Value"] || row["P Score"]),
+    "Z-Score": Number(row["Z-Score"] || row["Z-Score"]),
+    "P-Value": Number(row["P-Value"] || row["P-Value"]),
   }));
 
-  // Filter for P-scores < 0.05 and sort by absolute Z Score
+  // Filter for P-scores < 0.05 and sort by absolute Z-Score
   const sortedData = processedData
-    .filter((row) => row["P Score"] < 0.05)
-    // .filter(row => row["Z Score"] >=  Math.abs(2.0))
+    .filter((row) => row["P-Value"] < 0.05)
+    // .filter(row => row["Z-Score"] >=  Math.abs(2.0))
     .sort((a, b) => {
-      // First sort by P Score (descending)
-      if (a["P Score"] !== b["P Score"]) {
-        return a["P Score"] - b["P Score"];
+      // First sort by P-Value (descending)
+      if (a["P-Value"] !== b["P-Value"]) {
+        return a["P-Value"] - b["P-Value"];
       }
-      // If P Scores are equal, sort by absolute Z Score (descending)
-      return Math.abs(b["Z Score"]) - Math.abs(a["Z Score"]);
+      // If P Scores are equal, sort by absolute Z-Score (descending)
+      return Math.abs(b["Z-Score"]) - Math.abs(a["Z-Score"]);
     });
 
   // Reindex after sorting
   const finalData = sortedData.map((row, index) => ({
     index: index + 1,
     Dimensions: row.Dimensions,
-    "Z Score": row["Z Score"],
-    "P Score": row["P Score"],
+    "Z-Score": row["Z-Score"],
+    "P-Value": row["P-Value"],
   }));
 
   return {
